@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service.js';
-import {Prisma, User} from '@prisma/client';
+import { Prisma } from '@prisma/client/extension';
+import { CreateUserDto, UpdateUserDto } from '../dto/users/create-user.dto.js';
+// import {Prisma, User} from '@prisma/client';
 
 @Injectable()
 export class UsersRepository {
@@ -26,13 +28,13 @@ export class UsersRepository {
     });
   }
 
-  create(data: Prisma.UserCreateInput) {
+  create(data: CreateUserDto) {
     return this.prisma.user.create({
       data,
     });
   }
 
-  update(id: number, data: Prisma.UserUpdateInput) {
+  update(id: number, data: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },
       data,
