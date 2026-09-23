@@ -1,10 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Post,
 } from '@nestjs/common';
-
+import {RegisterDto} from '../../../libs/dto/auth/register.dto.js';
 import { ClientProxy } from '@nestjs/microservices';
 @Controller('auth')
 export class AuthController {
@@ -20,4 +21,22 @@ export class AuthController {
       dto,
     );
   }
+
+  @Post('login')
+  login(@Body() data: { email: string; password: string }) {
+    return this.authClient.send(
+      { cmd: 'auth.login' },
+      data,
+    );
+  }
+
+  @Get('register')
+  getRegisterData() {
+    return this.authClient.send(
+      { cmd: 'auth.getRegisterData' },
+      {},
+    );
+  }
+
+
 }

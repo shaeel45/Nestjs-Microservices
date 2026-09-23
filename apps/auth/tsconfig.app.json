@@ -6,8 +6,5 @@
     "outDir": "../../dist/apps/auth"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"],
-   "references": [
-    { "path": "../../libs/tsconfig.json" }
-  ]
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

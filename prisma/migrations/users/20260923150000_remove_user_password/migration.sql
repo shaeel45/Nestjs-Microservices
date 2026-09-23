@@ -1,0 +1,1 @@
+ALTER TABLE "ecommerce_users" DROP COLUMN IF EXISTS "password";

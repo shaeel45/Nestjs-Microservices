@@ -16,4 +16,14 @@ export class AuthController {
   }) {
     return this.authService.register(data);
   }
+
+  @MessagePattern({ cmd: 'auth.login' })
+  login(data: { email: string; password: string }) {
+    return this.authService.login(data);
+  }
+
+  @MessagePattern({ cmd: 'auth.getRegisterData' })
+  getRegisterData() {
+    return this.authService.getRegisterData();
+  }
 }

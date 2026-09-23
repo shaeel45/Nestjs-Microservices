@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices/client/index.js';
+import { CreateUserDto, UpdateUserDto } from '../../../libs/dto/users/create-user.dto.js';
 
 @Controller('users')
 export class UsersController {
@@ -12,7 +13,7 @@ export class UsersController {
     }
 
     @Post()
-    create(@Body() data: { name: string; email: string }) {
+    create(@Body() data: CreateUserDto) {
         return this.userClient.send({ cmd: 'users.create' }, data);
     }
 
@@ -27,7 +28,7 @@ export class UsersController {
     }
 
     @Put()
-    update(@Body() data: { id: number; name: string; email: string }) {
+    update(@Body() data: UpdateUserDto & { id: number }) {
         return this.userClient.send({ cmd: 'users.update' }, data );
     }
 }

@@ -29,7 +29,9 @@
     "@app/dto/*": ["libs/dto/*"]
   },
   "references": [
-    { "path": "./apps/libs/tsconfig.json" },
+    {
+      "path": "./apps/libs/tsconfig.json"
+    },
     {
       "path": "./apps/api-gateway/tsconfig.app.json"
     },

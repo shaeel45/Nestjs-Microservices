@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UsersRepository } from './users.repository.js';
-import { CreateUserDto, UpdateUserDto } from '../dto/users/create-user.dto.js';
+import { CreateUserDto, UpdateUserDto } from '../../../libs/dto/users/create-user.dto.js';
 import { Prisma } from '@prisma/client/extension';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/wasm-compiler-edge';
 
@@ -84,5 +84,9 @@ export class UsersService {
     return {
       message: 'User deleted successfully',
     };
+  }
+
+  findByEmail(email: string) {
+    return this.usersRepository.findByEmail(email);
   }
 }

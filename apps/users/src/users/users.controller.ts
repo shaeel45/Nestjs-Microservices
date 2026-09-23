@@ -37,4 +37,9 @@ export class UsersController {
   remove(id: number) {
     return this.usersService.deleteUser(id);
   }
+
+  @MessagePattern({ cmd: 'users.findByEmail' })
+  findByEmail(email: string) {
+    return this.usersService.findByEmail(email);
+  }
 }
