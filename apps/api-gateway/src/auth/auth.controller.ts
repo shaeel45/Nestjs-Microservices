@@ -7,13 +7,16 @@ import {
 } from '@nestjs/common';
 import {RegisterDto} from '../../../libs/dto/auth/register.dto.js';
 import { ClientProxy } from '@nestjs/microservices';
+import { Public } from './decorators/public.decorators.js';
+import { CurrentUser } from './decorators/current-user.decorator.js';
 @Controller('auth')
 export class AuthController {
   constructor(
     @Inject('AUTH_SERVICE')
     private readonly authClient: ClientProxy,
   ) {}
-
+ 
+  @Public()
   @Post('register')
   register(@Body() dto: RegisterDto) {
     return this.authClient.send(
@@ -22,6 +25,7 @@ export class AuthController {
     );
   }
 
+  @Public()
   @Post('login')
   login(@Body() data: { email: string; password: string }) {
     return this.authClient.send(
