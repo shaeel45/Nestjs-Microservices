@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service.js';
 import { Prisma } from '@prisma/client/extension';
 import { CreateUserDto, UpdateUserDto } from '../../../libs/dto/users/create-user.dto.js';
+import { Role } from '../generated/prisma/enums.js';
 // import {Prisma, User} from '@prisma/client';
 
 @Injectable()
@@ -30,14 +31,24 @@ export class UsersRepository {
 
   create(data: CreateUserDto) {
     return this.prisma.user.create({
-      data,
+      data: {
+        fullname: data.fullname,
+        lastname: data.lastname,
+        email: data.email,
+        role: data.role as Role,
+      },
     });
   }
 
   update(id: number, data: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },
-      data,
+      data: {
+        fullname: data.fullname,
+        lastname: data.lastname,
+        email: data.email,
+        role: data.role as Role,
+      },
     });
   }
 

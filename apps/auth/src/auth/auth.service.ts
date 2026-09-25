@@ -11,20 +11,19 @@ import {
 import * as bcrypt from 'bcrypt';
 import { AuthRepository } from './auth.repository.js';
 import { firstValueFrom } from 'rxjs';
+import { RegisterDto } from '../../../libs/dto/auth/register.dto.js';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
+    private readonly jwt : JwtService,
     @Inject('USERS_SERVICE')
     private readonly usersClient: ClientProxy,
   ) {}
 
-  async register(data: {
-    name: string;
-    email: string;
-    password: string;
-  }) {
+  async register(data: RegisterDto) {
     const existingUser = await firstValueFrom(
       this.usersClient.send(
         { cmd: 'users.findByEmail' },
@@ -47,8 +46,10 @@ export class AuthService {
       this.usersClient.send(
         { cmd: 'users.create' },
         {
-          name: data.name,
+          fullname: data.fullname,
+          lastname: data.lastname,
           email: data.email,
+          role: data.role,
         },
       )
     );
@@ -60,16 +61,18 @@ export class AuthService {
 
     return {
       id: user.id,
-      name: user.name,
+      fullname: user.fullname,
+      lastname: user.lastname,
       email: user.email,
+      role: user.role
     };
   }
 
   async login(data: {
     email: string;
     password: string;
+    role: string;
   }) {
-
       const user = await firstValueFrom(
           this.usersClient.send(
               { cmd: 'users.findByEmail' },
@@ -103,11 +106,26 @@ export class AuthService {
           );
         }
 
-        return {
-          userId: user.id,
+        const payload = {
+          sub : user.id,
           email: user.email,
+          role: user.role,
+        }
+
+        const accessToken = await this.jwt.signAsync(payload);
+        return {
+          user: {
+        id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+          },
+          accessToken,
         };
       }
+
+
 
   async getRegisterData() {
     return this.authRepository.getRegisterData();

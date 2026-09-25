@@ -34,8 +34,10 @@ export class UsersService {
   async createUser(dto: CreateUserDto) {
     try {
       return await this.usersRepository.create({
-        name: dto.name,
+        fullname: dto.fullname,
+        lastname: dto.lastname,
         email: dto.email,
+        role: dto.role, 
       });
     } catch (error) {
       if (

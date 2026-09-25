@@ -20,7 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
       },
     ]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'default_secret',
+      secret: process.env.JWT_ACCESS_SECRET || 'default_secret',
       signOptions: { expiresIn: '15m' },
     }),
   ],

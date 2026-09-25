@@ -4,11 +4,12 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { UserRole } from '../users/create-user.dto.js';
 
 export class RegisterDto {
   @IsString()
   @IsNotEmpty()
-  firstname: string;
+  fullname: string;
 
   @IsString()
   @IsNotEmpty()
@@ -23,5 +24,5 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  roles: string;
+  role: UserRole;
 }

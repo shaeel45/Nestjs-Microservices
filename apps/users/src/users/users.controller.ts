@@ -1,6 +1,10 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { UsersService } from './users.service.js';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+} from '../../../libs/dto/users/create-user.dto.js';
 
 @Controller()
 export class UsersController {
@@ -17,20 +21,13 @@ export class UsersController {
   }
 
   @MessagePattern({ cmd: 'users.create' })
-  create(data: { name: string; email: string }) {
+  create(data: CreateUserDto) {
     return this.usersService.createUser(data);
   }
 
   @MessagePattern({ cmd: 'users.update' })
-  update(data: {
-    id: number;
-    name?: string;
-    email?: string;
-  }) {
-    return this.usersService.updateUser(data.id, {
-      name: data.name ?? '',
-      email: data.email ?? '',
-    });
+  update(data: UpdateUserDto & { id: number }) {
+    return this.usersService.updateUser(data.id, data);
   }
 
   @MessagePattern({ cmd: 'users.delete' })

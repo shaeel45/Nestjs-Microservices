@@ -27,7 +27,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  login(@Body() data: { email: string; password: string }) {
+  login(@Body() data: { email: string; password: string, role: string }) {
     return this.authClient.send(
       { cmd: 'auth.login' },
       data,
