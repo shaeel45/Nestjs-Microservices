@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service.js';
+import { createHash, randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthRepository {

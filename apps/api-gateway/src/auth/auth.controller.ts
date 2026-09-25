@@ -9,6 +9,8 @@ import {RegisterDto} from '../../../libs/dto/auth/register.dto.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { Public } from './decorators/public.decorators.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
+import {RefreshTokenDto} from '../../../libs/dto/auth/refreshToken.dto.js';
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -32,6 +34,14 @@ export class AuthController {
       { cmd: 'auth.login' },
       data,
     );
+  }
+
+  @Public()
+  @Post('refresh')
+  refresh(@Body() dto: RefreshTokenDto){
+    return this.authClient.send({
+      cmd: 'auth.RefreshToken'
+    }, { refreshToken: dto.refreshToken })
   }
 
   @Get('register')

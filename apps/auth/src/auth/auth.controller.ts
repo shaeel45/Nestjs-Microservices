@@ -2,6 +2,8 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from '../../../libs/dto/auth/register.dto.js';
+import { RefreshTokenDto } from '../../../libs/dto/auth/refreshToken.dto.js';
+
 
 @Controller()
 export class AuthController {
@@ -23,4 +25,10 @@ export class AuthController {
   getRegisterData() {
     return this.authService.getRegisterData();
   }
+
+  @MessagePattern({cmd: 'auth.RefreshToken'})
+  refreshToken(data: RefreshTokenDto){
+    return this.authService.refresh(data.refreshToken)
+  }
+
 }
