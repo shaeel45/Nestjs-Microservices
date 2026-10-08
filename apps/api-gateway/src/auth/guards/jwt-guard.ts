@@ -5,48 +5,48 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+
 import { IS_PUBLIC_KEY } from '../decorators/public.decorators.js';
-import { Reflector } from '@nestjs/core/services/index.js';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private reflector: Reflector
+    private readonly reflector: Reflector,
   ) {}
 
-  async canActivate(
-    context: ExecutionContext,
-  ): Promise<boolean> {
-      const isPublic = this.reflector.getAllAndOverride<boolean>(
-        IS_PUBLIC_KEY,
-        [context.getHandler(), context.getClass()],
-      );
-  
-      if (isPublic) {
-        return true;
-      }
-    const request =
-      context.switchToHttp().getRequest();
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
-    const [type, token] =
-      request.headers.authorization?.split(' ') ?? [];
-
-    if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException();
+    if (isPublic) {
+      return true;
     }
 
+    const request = context.switchToHttp().getRequest<Request>();
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader) {
+      throw new UnauthorizedException('Authorization header missing');
+    }
+
+    const [type, token] = authHeader.split(' ');
+
+    if (type !== 'Bearer' || !token) {
+      throw new UnauthorizedException('Invalid authorization format');
+    }
 
     try {
-      const payload =
-        await this.jwtService.verifyAsync(token);
-
-      request.user = payload;
-
+      const payload = await this.jwtService.verifyAsync(token);
+      (request as Request & { user?: unknown }).user = payload;
       return true;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid or expired access token');
     }
   }
 }

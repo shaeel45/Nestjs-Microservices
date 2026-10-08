@@ -85,9 +85,11 @@ export type CredentialScalarFieldEnum = (typeof CredentialScalarFieldEnum)[keyof
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  familyId: 'familyId',
   tokenHash: 'tokenHash',
   expiresAt: 'expiresAt',
   revokedAt: 'revokedAt',
+  replacedByTokenHash: 'replacedByTokenHash',
   createdAt: 'createdAt'
 } as const
 

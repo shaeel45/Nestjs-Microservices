@@ -1,46 +1,78 @@
-import { Body, Controller, Get, Inject, Param, ParseIntPipe, Post, Delete, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices/client/index.js';
+import { firstValueFrom } from 'rxjs';
+
 import { CreateUserDto, UpdateUserDto } from '../../../libs/dto/users/create-user.dto.js';
 import type { JwtPayload } from '../../../libs/dto/auth/jwt-payload.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { Role } from '../auth/enums/role.enums.js';
 
 @Controller('users')
 export class UsersController {
-    constructor(@Inject('USERS_SERVICE')
-    private readonly userClient : ClientProxy){}
+  constructor(
+    @Inject('USERS_SERVICE')
+    private readonly userClient: ClientProxy,
+  ) {}
 
-    @Get()
-    findAll() {
-        return this.userClient.send({ cmd: 'users.findAll' }, {});
-    }
+  //Get: users/admin/users
+  @Roles(Role.ADMIN)
+  @Get('admin/users')
+  findAllAdmin() {
+    return this.userClient.send({ cmd: 'users.findAll' }, {});
+  }
+  //Get: users
+  @Roles(Role.ADMIN)
+  @Get()
+  findAll() {
+    return this.userClient.send({ cmd: 'users.findAll' }, {});
+  }
 
-    @Post()
-    create(@Body() data: CreateUserDto) {
-        return this.userClient.send({ cmd: 'users.create' }, data);
-    }
+  //POST: users
+  @Post()
+  create(@Body() data: CreateUserDto) {
+    return this.userClient.send({ cmd: 'users.create' }, data);
+  }
 
-    @Get(':id')
-    findById(@Param('id', ParseIntPipe) id:number){
-        return this.userClient.send({ cmd: 'users.findById' }, id);
-    }
+  //Get: users/me
+  @Roles(Role.CUSTOMER, Role.ADMIN)
+  @Get('me')
+  getMe(@CurrentUser('sub') userId: number) {
+    return firstValueFrom(
+      this.userClient.send(
+        {
+          cmd: 'users.findById',
+        },
+        userId,
+      ),
+    );
+  }
 
-    @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id:number){
-        return this.userClient.send({ cmd: 'users.delete' }, id);
-    }
+  //Get: users/id
+  @Get(':id')
+  findById(@Param('id', ParseIntPipe) id: number) {
+    return this.userClient.send({ cmd: 'users.findById' }, id);
+  }
 
-    @Put()
-    update(@Body() data: UpdateUserDto & { id: number }) {
-        return this.userClient.send({ cmd: 'users.update' }, data );
-    }
+  //DELETE: users/id
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userClient.send({ cmd: 'users.delete' }, id);
+  }
 
-    @Get('me')
-    getMe(@CurrentUser() user: JwtPayload){
-        return this.userClient.send(
-            {
-                cmd : 'users.findById'
-            },
-            user.sub
-        )
-    }
+  //PUT: users
+  @Put()
+  update(@Body() data: UpdateUserDto & { id: number }) {
+    return this.userClient.send({ cmd: 'users.update' }, data);
+  }
 }

@@ -18,12 +18,15 @@ model Credential {
 }
 
 model RefreshToken {
-  id        String    @id @default(cuid())
-  userId    Int
-  tokenHash String    @unique
-  expiresAt DateTime
-  revokedAt DateTime?
-  createdAt DateTime  @default(now())
+  id                  String    @id @default(cuid())
+  userId              Int
+  familyId            String
+  tokenHash           String    @unique
+  expiresAt           DateTime
+  revokedAt           DateTime?
+  replacedByTokenHash String?
+  createdAt           DateTime  @default(now())
 
   @@index([userId])
+  @@index([familyId])
 }

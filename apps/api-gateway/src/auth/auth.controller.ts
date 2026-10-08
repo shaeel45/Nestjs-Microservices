@@ -18,6 +18,7 @@ export class AuthController {
     private readonly authClient: ClientProxy,
   ) {}
  
+  //POST: auth/register
   @Public()
   @Post('register')
   register(@Body() dto: RegisterDto) {
@@ -27,6 +28,7 @@ export class AuthController {
     );
   }
 
+  //POST: auth/login
   @Public()
   @Post('login')
   login(@Body() data: { email: string; password: string, role: string }) {
@@ -36,6 +38,7 @@ export class AuthController {
     );
   }
 
+  //POST: auth/refresh
   @Public()
   @Post('refresh')
   refresh(@Body() dto: RefreshTokenDto){
@@ -44,6 +47,8 @@ export class AuthController {
     }, { refreshToken: dto.refreshToken })
   }
 
+  //GET: auth/register
+  @Public()
   @Get('register')
   getRegisterData() {
     return this.authClient.send(
@@ -51,6 +56,4 @@ export class AuthController {
       {},
     );
   }
-
-
 }
