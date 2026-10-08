@@ -15,6 +15,7 @@
     "start:users": "nest start --watch --config nest-cli.users.json",
     "start:gateway": "nest start --watch --config nest-cli.api-gateway.json",
     "start:auth": "nest start --watch --config nest-cli.auth.json",
+    "start:products": "nest start --watch  --config nest-cli.products.json",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/nestjs-microservices/apps/nestjs-microservices/src/main",
     "lint": "oxlint --type-aware src/ test/",
@@ -22,12 +23,14 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
-    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
-    "postinstall": "npm run prisma:generate:users && npm run prisma:generate:auth",
+    "test:e2e": "viapps/nestjs-microservices/test run --config ./vitest.config.e2e.ts",
+    "postinstall": "npm run prisma:generate:users && npm run prisma:generate:auth && npm run prisma:generate:products",
     "prisma:generate:users": "prisma generate --config prisma/users.config.ts",
+    "prisma:generate:products": "prisma generate --config prisma/products.config.ts",
     "prisma:generate:auth": "prisma generate --config prisma/auth.config.ts",
     "prisma:migrate:users": "prisma migrate deploy --config prisma/users.config.ts",
-    "prisma:migrate:auth": "prisma migrate deploy --config prisma/auth.config.ts"
+    "prisma:migrate:auth": "prisma migrate deploy --config prisma/auth.config.ts",
+    "prisma:migrate:products": "prisma migrate deploy --config prisma/products.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
