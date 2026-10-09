@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ProductsModule } from './products.module.js';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';

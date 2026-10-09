@@ -4,6 +4,8 @@ import { ApiGatewayModule } from './api-gateway.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guards/jwt-guard.js';
 import { RolesGuard } from './auth/guards/roles.guard.js';
+import express from 'express';
+import { join } from 'node:path';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
@@ -13,7 +15,11 @@ async function bootstrap() {
   const rolesGuard = app.get(RolesGuard);
 
   app.useGlobalGuards(jwtGuard, rolesGuard);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.use(
+    '/uploads',
+    express.static(join(process.cwd(), 'uploads')),
+  );
 
   await app.listen(port);
   console.log(`API gateway is running on http://127.0.0.1:${port}`);

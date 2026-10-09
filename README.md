@@ -25,6 +25,28 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Products API
+
+Start the products TCP service (`npm run start:products`) and API gateway
+(`npm run start:gateway`) with `PRODUCTS_DATABASE_URL` configured. Product routes
+are available at the gateway and require a bearer access token.
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/products` | List products |
+| `GET` | `/products/:id` | Get a product |
+| `POST` | `/products` | Create a product |
+| `PATCH` or `PUT` | `/products/:id` | Update a product |
+| `DELETE` | `/products/:id` | Delete a product |
+| `POST` | `/products/:id/image` | Upload/replace the product image |
+
+Create and update requests use JSON fields from the products schema. For image
+uploads, send `multipart/form-data` with the file in the `image` field; JPEG,
+PNG, GIF, and WebP files up to 5 MB are accepted. The returned product's
+`imageURL` is a URL path served by the gateway, for example
+`/uploads/products/<generated-filename>`. Uploaded files are stored in the
+gateway's `uploads/products` directory.
+
 ## Project setup
 
 ```bash
