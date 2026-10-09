@@ -11,6 +11,12 @@ async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
   const port = Number(process.env.PORT ?? 3000);
 
+  app.enableCors({
+    origin: process.env.ADMIN_PORTAL_ORIGIN ?? 'http://localhost:5174',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+  });
+
   const jwtGuard = app.get(JwtAuthGuard);
   const rolesGuard = app.get(RolesGuard);
 
