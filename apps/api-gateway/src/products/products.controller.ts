@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,8 +23,12 @@ import { join } from 'node:path';
 import { firstValueFrom } from 'rxjs';
 import {
   CreateProductDto,
+  ProductPaginationQueryDto,
   UpdateProductDto,
 } from '../../../libs/dto/products/product.dto.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { Public } from '../auth/decorators/public.decorators.js';
+import { Role } from '../auth/enums/role.enums.js';
 
 const uploadDirectory = join(process.cwd(), 'uploads', 'products');
 const imageExtensions: Record<string, string> = {
@@ -40,21 +45,37 @@ export class ProductsController {
     private readonly productsClient: ClientProxy,
   ) {}
 
+  @Public()
   @Get()
-  findAll() {
-    return this.productsClient.send({ cmd: 'products.findAll' }, {});
+  findAll(@Query() query: ProductPaginationQueryDto) {
+    return this.productsClient.send({ cmd: 'products.findAll' }, query);
   }
 
+  @Public()
   @Get(':id')
   findById(@Param('id', ParseIntPipe) id: number) {
     return this.productsClient.send({ cmd: 'products.findById' }, id);
   }
 
+  @Public()
+  @Post(':id/reviews')
+  addReview(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() review: { author: string; rating: number; comment: string },
+  ) {
+    return this.productsClient.send(
+      { cmd: 'products.addReview' },
+      { id, review },
+    );
+  }
+
+  @Roles(Role.ADMIN)
   @Post()
   create(@Body() data: CreateProductDto) {
     return this.productsClient.send({ cmd: 'products.create' }, data);
   }
 
+  @Roles(Role.ADMIN)
   @Patch(':id')
   @Put(':id')
   update(
@@ -67,6 +88,7 @@ export class ProductsController {
     );
   }
 
+  @Roles(Role.ADMIN)
   @Post(':id/image')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -123,7 +145,8 @@ export class ProductsController {
       throw error;
     }
   }
-
+  
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsClient.send({ cmd: 'products.delete' }, id);

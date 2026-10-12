@@ -15,15 +15,19 @@ model Products {
   price     Float    @default(0)
   original_price     Float    @default(0)
   stock     Int      @default(0)
-  colors     String   @default("")
-  sizes     String   @default("")
-  imageURL     String   @default("")
-  category     String   @default("")
-  isNew     Boolean   @default(false)
-  isTrending     Boolean   @default(false)
-  isFeatured     Boolean   @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  colors         String[] @default([])
+  sizes          String[] @default([])
+  images         String[] @default([])
+  details        String[] @default([])
+  rating         Json?    @default("{\"rate\": 0, \"count\": 0}")
+  review         Json?    @default("[]")
+  imageURL       String   @default("")
+  category       String   @default("")
+  isNew          Boolean  @default(false)
+  isTrending     Boolean  @default(false)
+  isFeatured     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("ecommerce_products")
 }

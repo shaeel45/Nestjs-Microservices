@@ -12,7 +12,25 @@ async function bootstrap() {
   const port = Number(process.env.PORT ?? 3000);
 
   app.enableCors({
-    origin: process.env.ADMIN_PORTAL_ORIGIN ?? 'http://localhost:5174',
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true);
+      const allowed = [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:3000',
+        process.env.ADMIN_PORTAL_ORIGIN,
+        process.env.STOREFRONT_ORIGIN,
+      ].filter(Boolean);
+      if (allowed.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   });

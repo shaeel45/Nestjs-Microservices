@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import {
   CreateProductDto,
+  ProductPaginationQueryDto,
   UpdateProductDto,
 } from '../../libs/dto/products/product.dto.js';
 import { ProductsService } from './products.service.js';
@@ -11,8 +12,8 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @MessagePattern({ cmd: 'products.findAll' })
-  findAll() {
-    return this.productsService.findAll();
+  findAll(query?: ProductPaginationQueryDto) {
+    return this.productsService.findAll(query);
   }
 
   @MessagePattern({ cmd: 'products.findById' })
@@ -33,6 +34,11 @@ export class ProductsController {
   @MessagePattern({ cmd: 'products.updateImage' })
   updateImage(data: { id: number; imageURL: string }) {
     return this.productsService.updateImage(data.id, data.imageURL);
+  }
+
+  @MessagePattern({ cmd: 'products.addReview' })
+  addReview(data: { id: number; review: { author: string; rating: number; comment: string } }) {
+    return this.productsService.addReview(data.id, data.review);
   }
 
   @MessagePattern({ cmd: 'products.delete' })
