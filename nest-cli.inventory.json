@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/inventory/src",
+  "root": "apps/inventory",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "tsConfigPath": "apps/inventory/tsconfig.app.json"
+  }
+}

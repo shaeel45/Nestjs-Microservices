@@ -6,6 +6,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-guard.js';
 import { RolesGuard } from './auth/guards/roles.guard.js';
 import { JwtModule } from '@nestjs/jwt';
 import { ProductsController } from './products/products.controller.js';
+import { InventoryController } from './inventory/inventory.controller.js';
 
 @Module({
   imports: [
@@ -34,6 +35,14 @@ import { ProductsController } from './products/products.controller.js';
           port: 3003,
         },
       },
+      {
+        name: 'INVENTORY_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: '127.0.0.1',
+          port: 3004,
+        },
+      },
     ]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET || 'default_secret',
@@ -42,7 +51,12 @@ import { ProductsController } from './products/products.controller.js';
       },
     }),
   ],
-  controllers: [UsersController, AuthController, ProductsController],
+  controllers: [
+    UsersController,
+    AuthController,
+    ProductsController,
+    InventoryController,
+  ],
   providers: [JwtAuthGuard, RolesGuard],
 })
 export class ApiGatewayModule {}

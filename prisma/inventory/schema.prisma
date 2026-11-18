@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../apps/inventory/src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model InventoryItems {
+  id                Int      @id @default(autoincrement())
+  productId         Int      @unique
+  quantity          Int      @default(0)
+  reservedQuantity  Int      @default(0)
+  warehouse         String   @default("default")
+  lowStockThreshold Int      @default(10)
+  updatedAt         DateTime @updatedAt
+
+  @@map("ecommerce_inventory")
+}

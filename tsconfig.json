@@ -48,6 +48,9 @@
     },
     {
       "path": "./apps/products/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/inventory/tsconfig.app.json"
     }
   ]
 }
