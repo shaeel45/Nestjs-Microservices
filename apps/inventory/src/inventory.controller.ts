@@ -1,10 +1,14 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
+  AdjustStockDto,
+  ConsumeStockDto,
   CreateInventoryDto,
   InventoryQueryDto,
+  ReleaseStockDto,
+  ReserveStockDto,
+  TransactionQueryDto,
   UpdateInventoryDto,
-  AdjustStockDto,
 } from '../../libs/dto/inventory/inventory.dto.js';
 import { InventoryService } from './inventory.service.js';
 
@@ -13,47 +17,86 @@ export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
   @MessagePattern({ cmd: 'inventory.findAll' })
-  findAll(query?: InventoryQueryDto) {
-    return this.inventoryService.findAll(query);
+  findAll(@Payload() query?: InventoryQueryDto) {
+    return this.inventoryService.getStockLevels(query);
   }
 
   @MessagePattern({ cmd: 'inventory.findById' })
-  findById(id: number) {
-    return this.inventoryService.findById(id);
+  findById(@Payload() id: number) {
+    return this.inventoryService.findById(Number(id));
   }
 
   @MessagePattern({ cmd: 'inventory.findByProductId' })
-  findByProductId(productId: number) {
-    return this.inventoryService.findByProductId(productId);
+  findByProductId(@Payload() productId: number) {
+    return this.inventoryService.findByProductId(Number(productId));
+  }
+
+  @MessagePattern({ cmd: 'inventory.findTransactions' })
+  findTransactions(
+    @Payload() data: { inventoryItemId: number; query?: TransactionQueryDto },
+  ) {
+    return this.inventoryService.getTransactions(
+      Number(data.inventoryItemId),
+      data.query,
+    );
   }
 
   @MessagePattern({ cmd: 'inventory.create' })
-  create(data: CreateInventoryDto) {
+  create(@Payload() data: CreateInventoryDto) {
     return this.inventoryService.create(data);
   }
 
-  @MessagePattern({ cmd: 'inventory.update' })
-  update(data: { id: number; inventory: UpdateInventoryDto }) {
-    return this.inventoryService.update(data.id, data.inventory);
+  /** Create-if-missing, used by the products service on product create. */
+  @MessagePattern({ cmd: 'inventory.ensureStock' })
+  ensureStock(
+    @Payload()
+    data: {
+      productId: number;
+      quantity?: number;
+      warehouse?: string;
+      lowStockThreshold?: number;
+    },
+  ) {
+    return this.inventoryService.ensureStock(data);
   }
 
+  @MessagePattern({ cmd: 'inventory.update' })
+  update(@Payload() data: { id: number; inventory: UpdateInventoryDto }) {
+    return this.inventoryService.update(Number(data.id), data.inventory);
+  }
+
+  /** Atomic adjustment + InventoryTransaction history */
   @MessagePattern({ cmd: 'inventory.adjustStock' })
-  adjustStock(data: AdjustStockDto) {
+  adjustStock(@Payload() data: AdjustStockDto) {
     return this.inventoryService.adjustStock(data);
   }
 
+  /** Checkout-safe reservation (prevents overselling) */
   @MessagePattern({ cmd: 'inventory.reserveStock' })
-  reserveStock(data: { productId: number; quantity: number }) {
-    return this.inventoryService.reserveStock(data.productId, data.quantity);
+  reserveStock(@Payload() data: ReserveStockDto) {
+    return this.inventoryService.reserveStock(data);
   }
 
+  /** Release/cancel a reservation */
   @MessagePattern({ cmd: 'inventory.releaseStock' })
-  releaseStock(data: { productId: number; quantity: number }) {
-    return this.inventoryService.releaseStock(data.productId, data.quantity);
+  releaseStock(@Payload() data: ReleaseStockDto) {
+    return this.inventoryService.releaseStock(data);
+  }
+
+  /** Finalize a reservation into a completed sale (SALE history). */
+  @MessagePattern({ cmd: 'inventory.consumeStock' })
+  consumeStock(@Payload() data: ConsumeStockDto) {
+    return this.inventoryService.consumeStock(data);
   }
 
   @MessagePattern({ cmd: 'inventory.delete' })
-  remove(id: number) {
-    return this.inventoryService.remove(id);
+  remove(@Payload() id: number) {
+    return this.inventoryService.remove(Number(id));
+  }
+
+  /** Clean up inventory when its product is deleted. */
+  @MessagePattern({ cmd: 'inventory.deleteByProductId' })
+  deleteByProductId(@Payload() productId: number) {
+    return this.inventoryService.deleteByProductId(Number(productId));
   }
 }

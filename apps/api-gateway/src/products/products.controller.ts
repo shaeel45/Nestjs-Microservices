@@ -76,6 +76,15 @@ export class ProductsController {
   }
 
   @Roles(Role.ADMIN)
+  @Post('reconcile-stock')
+  reconcileStock(@Body() body?: { fix?: boolean }) {
+    return this.productsClient.send(
+      { cmd: 'products.reconcileStock' },
+      { fix: body?.fix === true },
+    );
+  }
+
+  @Roles(Role.ADMIN)
   @Patch(':id')
   @Put(':id')
   update(

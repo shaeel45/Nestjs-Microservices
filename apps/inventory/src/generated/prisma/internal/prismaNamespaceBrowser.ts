@@ -51,7 +51,8 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  InventoryItems: 'InventoryItems'
+  InventoryItem: 'InventoryItem',
+  InventoryTransaction: 'InventoryTransaction'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -70,17 +71,34 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const InventoryItemsScalarFieldEnum = {
+export const InventoryItemScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   quantity: 'quantity',
   reservedQuantity: 'reservedQuantity',
   warehouse: 'warehouse',
   lowStockThreshold: 'lowStockThreshold',
+  createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type InventoryItemsScalarFieldEnum = (typeof InventoryItemsScalarFieldEnum)[keyof typeof InventoryItemsScalarFieldEnum]
+export type InventoryItemScalarFieldEnum = (typeof InventoryItemScalarFieldEnum)[keyof typeof InventoryItemScalarFieldEnum]
+
+
+export const InventoryTransactionScalarFieldEnum = {
+  id: 'id',
+  inventoryItemId: 'inventoryItemId',
+  type: 'type',
+  changeAmount: 'changeAmount',
+  quantityBefore: 'quantityBefore',
+  quantityAfter: 'quantityAfter',
+  performedBy: 'performedBy',
+  reason: 'reason',
+  referenceId: 'referenceId',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryTransactionScalarFieldEnum = (typeof InventoryTransactionScalarFieldEnum)[keyof typeof InventoryTransactionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -97,4 +115,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

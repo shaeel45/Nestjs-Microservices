@@ -32,7 +32,7 @@ export * from "./enums.js"
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
  * // Fetch zero or more InventoryItems
- * const inventoryItems = await prisma.inventoryItems.findMany()
+ * const inventoryItems = await prisma.inventoryItem.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,7 +42,12 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model InventoryItems
+ * Model InventoryItem
  * 
  */
-export type InventoryItems = Prisma.InventoryItemsModel
+export type InventoryItem = Prisma.InventoryItemModel
+/**
+ * Model InventoryTransaction
+ * 
+ */
+export type InventoryTransaction = Prisma.InventoryTransactionModel

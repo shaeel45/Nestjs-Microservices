@@ -9,7 +9,12 @@
 * 🟢 You can import this file directly.
 */
 
+export const InventoryTransactionType = {
+  RESTOCK: 'RESTOCK',
+  SALE: 'SALE',
+  RETURN: 'RETURN',
+  DAMAGE: 'DAMAGE',
+  ADJUSTMENT: 'ADJUSTMENT'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type InventoryTransactionType = (typeof InventoryTransactionType)[keyof typeof InventoryTransactionType]

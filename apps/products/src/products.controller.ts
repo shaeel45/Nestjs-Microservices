@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CreateProductDto,
   ProductPaginationQueryDto,
@@ -44,5 +44,17 @@ export class ProductsController {
   @MessagePattern({ cmd: 'products.delete' })
   remove(id: number) {
     return this.productsService.remove(id);
+  }
+
+  /** Internal: mirror an inventory change into the catalog stock cache. */
+  @MessagePattern({ cmd: 'products.setStockCache' })
+  setStockCache(@Payload() data: { id: number; stock: number }) {
+    return this.productsService.setStockCache(Number(data.id), Number(data.stock));
+  }
+
+  /** Compare product stock cache vs inventory and optionally repair it. */
+  @MessagePattern({ cmd: 'products.reconcileStock' })
+  reconcileStock(@Payload() options?: { fix?: boolean }) {
+    return this.productsService.reconcileStock(options);
   }
 }

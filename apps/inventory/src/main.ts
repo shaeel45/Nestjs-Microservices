@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { InventoryModule } from './inventory.module.js';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+import { RpcHttpExceptionFilter } from './rpc-exception.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(InventoryModule, {
@@ -11,6 +12,7 @@ async function bootstrap() {
       port: 3004,
     },
   });
+  app.useGlobalFilters(new RpcHttpExceptionFilter());
   await app.listen();
   console.log(`Inventory microservice is running on tcp://3004`);
 }
