@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/promocodes/src",
+  "root": "apps/promocodes",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "tsConfigPath": "apps/promocodes/tsconfig.app.json"
+  }
+}

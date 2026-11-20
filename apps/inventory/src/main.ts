@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { InventoryModule } from './inventory.module.js';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { RpcHttpExceptionFilter } from './rpc-exception.filter.js';
+import { RpcHttpExceptionFilter } from '../../libs/filters/rpc-http-exception.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(InventoryModule, {

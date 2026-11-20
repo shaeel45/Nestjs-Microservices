@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../apps/promocodes/src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model PromoCode {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique
+  discountPercent Int
+  description     String   @default("")
+  active          Boolean  @default(true)
+  usageCount      Int      @default(0)
+  maxUses         Int?
+  minOrderAmount  Float    @default(0)
+  expiresAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  redemptions PromoCodeRedemption[]
+
+  @@index([active])
+  @@index([expiresAt])
+  @@map("ecommerce_promo_codes")
+}
+
+model PromoCodeRedemption {
+  id             Int      @id @default(autoincrement())
+  promoCodeId    Int
+  code           String
+  orderReference String?
+  orderAmount    Float
+  discountAmount Float
+  performedBy    String?
+  createdAt      DateTime @default(now())
+
+  promoCode PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  @@index([promoCodeId, createdAt])
+  @@index([orderReference])
+  @@map("ecommerce_promo_code_redemptions")
+}
