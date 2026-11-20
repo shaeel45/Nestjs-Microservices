@@ -9,6 +9,8 @@ import { ProductsController } from './products/products.controller.js';
 import { InventoryController } from './inventory/inventory.controller.js';
 import { PromoCodesController } from './promocodes/promocodes.controller.js';
 import { OrdersController } from './orders/orders.controller.js';
+import { CartController } from './cart/cart.controller.js';
+import { CheckoutController } from './checkout/checkout.controller.js';
 
 @Module({
   imports: [
@@ -76,6 +78,8 @@ import { OrdersController } from './orders/orders.controller.js';
     InventoryController,
     PromoCodesController,
     OrdersController,
+    CartController,
+    CheckoutController,
   ],
   providers: [JwtAuthGuard, RolesGuard],
 })

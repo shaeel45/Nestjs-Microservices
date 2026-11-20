@@ -93,3 +93,54 @@ model OrderStatusEvent {
   @@index([orderId, createdAt])
   @@map("ecommerce_order_status_events")
 }
+
+/**
+ * Server-side shopping cart. Identified by a client-generated token so a guest
+ * cart survives reloads, and linked to the storefront customer when known.
+ */
+model Cart {
+  id            Int      @id @default(autoincrement())
+  cartToken     String   @unique
+  customerId    String?
+  customerEmail String?
+
+  /// Applied promo code snapshot; re-validated when checkout runs.
+  promoCode       String?
+  promoPercent    Float?
+  promoValidUntil DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items CartItem[]
+
+  @@index([customerId])
+  @@index([updatedAt])
+  @@map("ecommerce_carts")
+}
+
+model CartItem {
+  id        Int    @id @default(autoincrement())
+  cartId    Int
+  productId String?
+  name      String
+  price     Float
+  quantity  Int
+  size      String?
+  color     String?
+  image     String?
+  lineTotal Float
+
+  /// Normalised product+variant key so the same product/size/color is one line.
+  variantKey String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantKey])
+  @@index([cartId])
+  @@index([productId])
+  @@map("ecommerce_cart_items")
+}

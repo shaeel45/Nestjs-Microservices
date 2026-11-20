@@ -53,7 +53,9 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
-  OrderStatusEvent: 'OrderStatusEvent'
+  OrderStatusEvent: 'OrderStatusEvent',
+  Cart: 'Cart',
+  CartItem: 'CartItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -132,6 +134,40 @@ export const OrderStatusEventScalarFieldEnum = {
 } as const
 
 export type OrderStatusEventScalarFieldEnum = (typeof OrderStatusEventScalarFieldEnum)[keyof typeof OrderStatusEventScalarFieldEnum]
+
+
+export const CartScalarFieldEnum = {
+  id: 'id',
+  cartToken: 'cartToken',
+  customerId: 'customerId',
+  customerEmail: 'customerEmail',
+  promoCode: 'promoCode',
+  promoPercent: 'promoPercent',
+  promoValidUntil: 'promoValidUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CartScalarFieldEnum = (typeof CartScalarFieldEnum)[keyof typeof CartScalarFieldEnum]
+
+
+export const CartItemScalarFieldEnum = {
+  id: 'id',
+  cartId: 'cartId',
+  productId: 'productId',
+  name: 'name',
+  price: 'price',
+  quantity: 'quantity',
+  size: 'size',
+  color: 'color',
+  image: 'image',
+  lineTotal: 'lineTotal',
+  variantKey: 'variantKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
 
 
 export const SortOrder = {

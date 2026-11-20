@@ -32,3 +32,15 @@ export type OrderItem = Prisma.OrderItemModel
  * 
  */
 export type OrderStatusEvent = Prisma.OrderStatusEventModel
+/**
+ * Model Cart
+ * *
+ *  * Server-side shopping cart. Identified by a client-generated token so a guest
+ *  * cart survives reloads, and linked to the storefront customer when known.
+ */
+export type Cart = Prisma.CartModel
+/**
+ * Model CartItem
+ * 
+ */
+export type CartItem = Prisma.CartItemModel

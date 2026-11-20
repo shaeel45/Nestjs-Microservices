@@ -2,11 +2,11 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { RpcHttpExceptionFilter } from '../../libs/filters/rpc-http-exception.filter.js';
-import { OrdersModule } from './orders.module.js';
+import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    OrdersModule,
+    AppModule,
     {
       transport: Transport.TCP,
       options: {
