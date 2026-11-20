@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ProductsController } from './products/products.controller.js';
 import { InventoryController } from './inventory/inventory.controller.js';
 import { PromoCodesController } from './promocodes/promocodes.controller.js';
+import { OrdersController } from './orders/orders.controller.js';
 
 @Module({
   imports: [
@@ -52,6 +53,14 @@ import { PromoCodesController } from './promocodes/promocodes.controller.js';
           port: 3005,
         },
       },
+      {
+        name: 'ORDERS_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: '127.0.0.1',
+          port: 3006,
+        },
+      },
     ]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET || 'default_secret',
@@ -66,6 +75,7 @@ import { PromoCodesController } from './promocodes/promocodes.controller.js';
     ProductsController,
     InventoryController,
     PromoCodesController,
+    OrdersController,
   ],
   providers: [JwtAuthGuard, RolesGuard],
 })

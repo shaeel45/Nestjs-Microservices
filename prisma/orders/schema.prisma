@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../apps/orders/src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  orderNumber String      @unique
+  status      OrderStatus @default(PROCESSING)
+
+  customerId    String?
+  customerName  String
+  customerEmail String
+  customerPhone String?
+
+  shippingFullName   String
+  shippingStreet     String
+  shippingCity       String
+  shippingState      String
+  shippingPostalCode String
+  shippingCountry    String
+
+  shippingMethod String @default("Standard Shipping")
+  paymentMethod  String @default("Credit Card")
+  promoCode      String?
+  trackingNumber String?
+  notes          String?
+
+  subtotal    Float
+  discount    Float @default(0)
+  tax         Float @default(0)
+  shippingFee Float @default(0)
+  total       Float
+
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  items  OrderItem[]
+  events OrderStatusEvent[]
+
+  @@index([status])
+  @@index([customerId])
+  @@index([customerEmail])
+  @@index([createdAt])
+  @@map("ecommerce_orders")
+}
+
+model OrderItem {
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  productId   String?
+  productName String
+  unitPrice   Float
+  quantity    Int
+  size        String?
+  color       String?
+  image       String?
+  lineTotal   Float
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("ecommerce_order_items")
+}
+
+model OrderStatusEvent {
+  id          Int          @id @default(autoincrement())
+  orderId     Int
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  note        String?
+  performedBy String?
+  createdAt   DateTime     @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("ecommerce_order_status_events")
+}
