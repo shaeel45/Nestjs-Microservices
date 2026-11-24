@@ -24,6 +24,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   CreateProductDto,
   ProductPaginationQueryDto,
+  SearchProductsQueryDto,
   UpdateProductDto,
 } from '../../../libs/dto/products/product.dto.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
@@ -49,6 +50,28 @@ export class ProductsController {
   @Get()
   findAll(@Query() query: ProductPaginationQueryDto) {
     return this.productsClient.send({ cmd: 'products.findAll' }, query);
+  }
+
+  /**
+   * Ranked product search.
+   * `GET /products/search?q=oxford&limit=8&page=1&sortBy=relevance`
+   *
+   * Declared before `:id` so "search" is not parsed as a numeric id.
+   */
+  @Public()
+  @Get('search')
+  search(@Query() query: SearchProductsQueryDto) {
+    return this.productsClient.send({ cmd: 'products.search' }, query);
+  }
+
+  /**
+   * Autocomplete feed for the header search bar.
+   * `GET /products/suggestions?q=oxf&suggestionLimit=5`
+   */
+  @Public()
+  @Get('suggestions')
+  suggestions(@Query() query: SearchProductsQueryDto) {
+    return this.productsClient.send({ cmd: 'products.suggest' }, query);
   }
 
   @Public()

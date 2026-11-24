@@ -6,6 +6,8 @@ describe('ProductsController', () => {
   let productsController: ProductsController;
   const productsService = {
     findAll: vi.fn(),
+    search: vi.fn(),
+    suggest: vi.fn(),
     findById: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
@@ -43,5 +45,16 @@ describe('ProductsController', () => {
       '/uploads/products/shoes.jpg',
     );
     expect(productsService.remove).toHaveBeenCalledWith(5);
+  });
+
+  it('routes search and autocomplete queries to the service', () => {
+    const searchQuery = { q: 'oxford', limit: 8 };
+    const suggestQuery = { q: 'oxf', suggestionLimit: 5 };
+
+    productsController.search(searchQuery);
+    productsController.suggest(suggestQuery);
+
+    expect(productsService.search).toHaveBeenCalledWith(searchQuery);
+    expect(productsService.suggest).toHaveBeenCalledWith(suggestQuery);
   });
 });

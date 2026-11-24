@@ -34,11 +34,54 @@ are available at the gateway and require a bearer access token.
 | Method | Path | Description |
 | --- | --- | --- |
 | `GET` | `/products` | List products |
+| `GET` | `/products/search` | Ranked product search (public) |
+| `GET` | `/products/suggestions` | Autocomplete suggestions for the header search bar (public) |
 | `GET` | `/products/:id` | Get a product |
 | `POST` | `/products` | Create a product |
 | `PATCH` or `PUT` | `/products/:id` | Update a product |
 | `DELETE` | `/products/:id` | Delete a product |
 | `POST` | `/products/:id/image` | Upload/replace the product image |
+
+### Product search
+
+`GET /products/search?q=oxford&limit=8&page=1&sortBy=relevance`
+
+| Query | Default | Notes |
+| --- | --- | --- |
+| `q` | required | Trimmed and tokenized; matches name, description, category, colors, sizes, and details |
+| `limit` | `8` | 1–50 |
+| `page` | `1` | Clamped to the last page when it overshoots |
+| `sortBy` | `relevance` | `relevance`, `price-asc`, `price-desc`, `newest`, `rating` |
+| `category` | – | Restrict to one category |
+| `minPrice` / `maxPrice` | – | Price window |
+| `inStock` | – | `true` to hide sold-out items |
+| `suggestionLimit` | `5` | Size of each suggestion group |
+
+The response carries the ranked page plus everything the storefront
+autocomplete needs:
+
+```json
+{
+  "query": "oxford",
+  "tokens": ["oxford"],
+  "took": 12,
+  "total": 3,
+  "page": 1,
+  "limit": 8,
+  "totalPages": 1,
+  "data": [{ "id": 1, "name": "Oxford Cotton Shirt", "relevance": 127 }],
+  "suggestions": {
+    "products": [{ "id": 1, "name": "Oxford Cotton Shirt", "price": 89, "image": "/uploads/products/x.jpg", "category": "shirts" }],
+    "categories": [{ "name": "shirts", "count": 3 }],
+    "keywords": ["Oxford"]
+  }
+}
+```
+
+`GET /products/suggestions?q=oxf&suggestionLimit=5` returns the same
+`query`/`total`/`suggestions` shape without the `data` page, so the header
+dropdown stays light while the user types. Both routes are public and are
+declared before `/products/:id` so the segment is not parsed as an id.
 
 Create and update requests use JSON fields from the products schema. For image
 uploads, send `multipart/form-data` with the file in the `image` field; JPEG,

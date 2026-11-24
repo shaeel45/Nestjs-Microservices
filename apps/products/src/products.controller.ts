@@ -3,6 +3,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CreateProductDto,
   ProductPaginationQueryDto,
+  SearchProductsQueryDto,
   UpdateProductDto,
 } from '../../libs/dto/products/product.dto.js';
 import { ProductsService } from './products.service.js';
@@ -14,6 +15,18 @@ export class ProductsController {
   @MessagePattern({ cmd: 'products.findAll' })
   findAll(query?: ProductPaginationQueryDto) {
     return this.productsService.findAll(query);
+  }
+
+  /** Ranked search used by the storefront search page. */
+  @MessagePattern({ cmd: 'products.search' })
+  search(query: SearchProductsQueryDto) {
+    return this.productsService.search(query);
+  }
+
+  /** Autocomplete suggestions used by the header search bar. */
+  @MessagePattern({ cmd: 'products.suggest' })
+  suggest(query: SearchProductsQueryDto) {
+    return this.productsService.suggest(query);
   }
 
   @MessagePattern({ cmd: 'products.findById' })

@@ -1,10 +1,17 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { PrismaService } from '../database/prisma.service.js';
 import {
   CreateProductDto,
   ProductPaginationQueryDto,
+  SearchProductsQueryDto,
   UpdateProductDto,
 } from '../../libs/dto/products/product.dto.js';
 
@@ -24,6 +31,160 @@ type StockDiscrepancy = {
   resolved: boolean;
   error?: string;
 };
+
+type RankedProduct = { product: any; score: number };
+
+type ProductSuggestion = {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+};
+
+type CategorySuggestion = { name: string; count: number };
+
+/** Hard ceiling on rows scored in memory for one search request. */
+const SEARCH_CANDIDATE_LIMIT = 200;
+
+/** Split free-text input into unique, lowercase search tokens. */
+function tokenize(value: string): string[] {
+  return Array.from(
+    new Set(
+      value
+        .toLowerCase()
+        .split(/\s+/)
+        .map((token) => token.replace(/[^\p{L}\p{N}'-]/gu, ''))
+        .filter((token) => token.length > 0),
+    ),
+  );
+}
+
+function capitalize(value: string): string {
+  return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+}
+
+function toLowerList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => String(item).toLowerCase());
+}
+
+function ratingValue(product: any): number {
+  const rating = product?.rating;
+  if (typeof rating === 'number') return rating;
+  if (rating && typeof rating === 'object') {
+    const rate = Number((rating as { rate?: unknown }).rate);
+    return Number.isFinite(rate) ? rate : 0;
+  }
+  return 0;
+}
+
+/**
+ * Relevance score for a single product. Higher is better:
+ * exact/prefix name matches outweigh description-only matches, and
+ * per-token matches let multi-word queries ("black oxford") rank items
+ * that hit every word above items that only hit one.
+ */
+function scoreProduct(product: any, phrase: string, tokens: string[]): number {
+  const name = String(product.name ?? '').toLowerCase();
+  const description = String(product.description ?? '').toLowerCase();
+  const category = String(product.category ?? '').toLowerCase();
+  const colors = toLowerList(product.colors);
+  const sizes = toLowerList(product.sizes);
+  const details = toLowerList(product.details);
+
+  let score = 0;
+
+  if (name === phrase) score += 140;
+  else if (name.startsWith(phrase)) score += 100;
+  else if (name.includes(phrase)) score += 80;
+
+  if (category === phrase) score += 60;
+  else if (category.includes(phrase)) score += 40;
+
+  if (description.includes(phrase)) score += 15;
+
+  for (const token of tokens) {
+    if (name.split(/\s+/).includes(token)) score += 24;
+    else if (name.includes(token)) score += 16;
+
+    if (category.split(/\s+/).includes(token)) score += 12;
+    else if (category.includes(token)) score += 8;
+
+    if (description.includes(token)) score += 4;
+
+    if (colors.some((color) => color === token)) score += 10;
+    else if (colors.some((color) => color.includes(token))) score += 6;
+
+    if (sizes.some((size) => size === token)) score += 6;
+    if (details.some((detail) => detail.includes(token))) score += 3;
+  }
+
+  // Tiny nudges so equally relevant products surface buyable/featured first.
+  if (Number(product.stock) > 0) score += 3;
+  if (product.isFeatured) score += 2;
+  if (product.isTrending) score += 1;
+
+  return score;
+}
+
+function toProductSuggestion(product: any): ProductSuggestion {
+  const images = Array.isArray(product.images) ? product.images : [];
+  return {
+    id: Number(product.id),
+    name: String(product.name ?? ''),
+    price: Number(product.price) || 0,
+    image: product.imageURL || images[0] || '',
+    category: String(product.category ?? ''),
+  };
+}
+
+/** Word completions ("oxf" → "Oxford") drawn from the matched result set. */
+function buildKeywordSuggestions(
+  products: any[],
+  phrase: string,
+  limit: number,
+): string[] {
+  const scores = new Map<string, number>();
+
+  const collect = (raw: string, weight: number) => {
+    const word = raw.replace(/[^\p{L}\p{N}'-]/gu, '').trim();
+    if (!word) return;
+    const key = word.toLowerCase();
+    if (key === phrase || !key.startsWith(phrase)) return;
+    scores.set(key, (scores.get(key) ?? 0) + weight);
+  };
+
+  for (const product of products) {
+    for (const word of String(product.name ?? '').split(/\s+/)) {
+      collect(word, 3);
+    }
+    collect(String(product.category ?? ''), 2);
+    for (const value of toLowerList(product.colors)) collect(value, 1);
+    for (const value of toLowerList(product.sizes)) collect(value, 1);
+  }
+
+  return [...scores.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([word]) => capitalize(word));
+}
+
+function buildCategorySuggestions(
+  products: any[],
+  limit: number,
+): CategorySuggestion[] {
+  const counts = new Map<string, number>();
+  for (const product of products) {
+    const name = String(product.category ?? '').trim();
+    if (!name) continue;
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([name, count]) => ({ name, count }));
+}
 
 function toArray(value?: string | string[] | null): string[] {
   if (!value) return [];
@@ -138,6 +299,175 @@ export class ProductsService {
       limit,
       totalPages: Math.ceil(total / limit) || 1,
     };
+  }
+
+  /**
+   * Storefront search: ranked matches plus autocomplete suggestions.
+   *
+   * The database narrows the candidate set with a token `OR` filter, then
+   * results are scored in memory so an exact/prefix name hit outranks a
+   * product that only mentions the term in its description. The candidate
+   * set is capped, which keeps the sort cheap while staying accurate for a
+   * storefront-sized catalog.
+   */
+  async search(query: SearchProductsQueryDto) {
+    const startedAt = Date.now();
+    const phrase = String(query?.q ?? '').trim();
+    const tokens = tokenize(phrase);
+    if (tokens.length === 0) {
+      throw new BadRequestException('A search term is required');
+    }
+
+    const limit = Math.min(50, Math.max(1, Number(query?.limit) || 8));
+    const page = Math.max(1, Number(query?.page) || 1);
+    const suggestionLimit = Math.min(
+      20,
+      Math.max(1, Number(query?.suggestionLimit) || 5),
+    );
+
+    const candidates = await this.prisma.products.findMany({
+      where: this.buildSearchWhere(tokens, query),
+      orderBy: { createdAt: 'desc' },
+      take: SEARCH_CANDIDATE_LIMIT,
+    });
+
+    const ranked: RankedProduct[] = [];
+    for (const product of candidates) {
+      const score = scoreProduct(product, phrase.toLowerCase(), tokens);
+      if (score > 0) ranked.push({ product, score });
+    }
+
+    this.sortSearchResults(ranked, query?.sortBy);
+
+    const total = ranked.length;
+    const totalPages = Math.ceil(total / limit) || 1;
+    const safePage = Math.min(page, totalPages);
+    const start = (safePage - 1) * limit;
+    const pageItems = ranked.slice(start, start + limit);
+    const rankedProducts = ranked.map((entry) => entry.product);
+
+    return {
+      query: phrase,
+      tokens,
+      took: Date.now() - startedAt,
+      total,
+      page: safePage,
+      limit,
+      totalPages,
+      data: pageItems.map((entry) => ({
+        ...entry.product,
+        relevance: Number(entry.score.toFixed(2)),
+      })),
+      suggestions: {
+        products: ranked
+          .slice(0, suggestionLimit)
+          .map((entry) => toProductSuggestion(entry.product)),
+        categories: buildCategorySuggestions(
+          rankedProducts,
+          Math.min(5, suggestionLimit),
+        ),
+        keywords: buildKeywordSuggestions(
+          rankedProducts,
+          phrase.toLowerCase(),
+          Math.min(6, suggestionLimit + 1),
+        ),
+      },
+    };
+  }
+
+  /**
+   * Lightweight feed for the header autocomplete. Runs the same ranking as
+   * `search` but returns only the suggestion groups (no product page).
+   */
+  async suggest(query: SearchProductsQueryDto) {
+    const result = await this.search({ ...query, page: 1, limit: 1 });
+    return {
+      query: result.query,
+      took: result.took,
+      total: result.total,
+      suggestions: result.suggestions,
+    };
+  }
+
+  /** Build the Prisma `where` clause for a tokenized search query. */
+  private buildSearchWhere(
+    tokens: string[],
+    query: SearchProductsQueryDto,
+  ): any {
+    const matches: any[] = [];
+
+    for (const token of tokens) {
+      // Array columns are matched case-sensitively, so cover the common
+      // casings instead of relying on `mode: 'insensitive'`.
+      const variants = Array.from(
+        new Set([token, capitalize(token), token.toUpperCase()]),
+      );
+
+      matches.push(
+        { name: { contains: token, mode: 'insensitive' } },
+        { description: { contains: token, mode: 'insensitive' } },
+        { category: { contains: token, mode: 'insensitive' } },
+        { colors: { hasSome: variants } },
+        { sizes: { hasSome: variants } },
+        { details: { hasSome: variants } },
+      );
+    }
+
+    const where: any = { OR: matches };
+
+    if (query?.category && query.category !== 'all') {
+      where.category = { equals: query.category, mode: 'insensitive' };
+    }
+
+    if (query?.minPrice !== undefined && !Number.isNaN(Number(query.minPrice))) {
+      where.price = { ...(where.price || {}), gte: Number(query.minPrice) };
+    }
+
+    if (query?.maxPrice !== undefined && !Number.isNaN(Number(query.maxPrice))) {
+      where.price = { ...(where.price || {}), lte: Number(query.maxPrice) };
+    }
+
+    if (query?.inStock === true || query?.inStock === 'true') {
+      where.stock = { gt: 0 };
+    }
+
+    return where;
+  }
+
+  /** Relevance is the default; explicit sorts still respect the query. */
+  private sortSearchResults(ranked: RankedProduct[], sortBy?: string) {
+    const byScore = (a: RankedProduct, b: RankedProduct) => b.score - a.score;
+    const byNewest = (a: RankedProduct, b: RankedProduct) =>
+      new Date(b.product.createdAt ?? 0).getTime() -
+      new Date(a.product.createdAt ?? 0).getTime();
+
+    switch (sortBy) {
+      case 'price-asc':
+        ranked.sort(
+          (a, b) =>
+            (Number(a.product.price) || 0) - (Number(b.product.price) || 0) ||
+            byScore(a, b),
+        );
+        break;
+      case 'price-desc':
+        ranked.sort(
+          (a, b) =>
+            (Number(b.product.price) || 0) - (Number(a.product.price) || 0) ||
+            byScore(a, b),
+        );
+        break;
+      case 'rating':
+        ranked.sort(
+          (a, b) =>
+            ratingValue(b.product) - ratingValue(a.product) || byScore(a, b),
+        );
+        break;
+      case 'newest':
+        ranked.sort((a, b) => byNewest(a, b) || byScore(a, b));
+        break;
+      default:
+        ranked.sort((a, b) => byScore(a, b) || byNewest(a, b));
+    }
   }
 
   async findById(id: number) {
