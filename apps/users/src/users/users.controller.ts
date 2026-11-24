@@ -1,8 +1,9 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users.service.js';
 import {
   CreateUserDto,
+  UpdateShippingAddressDto,
   UpdateUserDto,
 } from '../../../libs/dto/users/create-user.dto.js';
 
@@ -38,5 +39,20 @@ export class UsersController {
   @MessagePattern({ cmd: 'users.findByEmail' })
   findByEmail(email: string) {
     return this.usersService.findByEmail(email);
+  }
+
+  @MessagePattern({ cmd: 'users.address.get' })
+  getAddress(@Payload() userId: number) {
+    return this.usersService.getShippingAddress(Number(userId));
+  }
+
+  @MessagePattern({ cmd: 'users.address.update' })
+  updateAddress(
+    @Payload() data: { userId: number; address: UpdateShippingAddressDto },
+  ) {
+    return this.usersService.updateShippingAddress(
+      Number(data.userId),
+      data.address,
+    );
   }
 }

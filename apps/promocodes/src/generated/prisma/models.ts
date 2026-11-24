@@ -10,4 +10,5 @@
  */
 export type * from './models/PromoCode.js'
 export type * from './models/PromoCodeRedemption.js'
+export type * from './models/StoreSetting.js'
 export type * from './commonInputTypes.js'

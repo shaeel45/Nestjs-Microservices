@@ -27,3 +27,10 @@ export type PromoCode = Prisma.PromoCodeModel
  * 
  */
 export type PromoCodeRedemption = Prisma.PromoCodeRedemptionModel
+/**
+ * Model StoreSetting
+ * Single-row store configuration: promotions banner, shipping rules and
+ * branding. The `id` is pinned to 1 so reads and writes always target the
+ * same record.
+ */
+export type StoreSetting = Prisma.StoreSettingModel

@@ -52,7 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   PromoCode: 'PromoCode',
-  PromoCodeRedemption: 'PromoCodeRedemption'
+  PromoCodeRedemption: 'PromoCodeRedemption',
+  StoreSetting: 'StoreSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -100,6 +101,25 @@ export const PromoCodeRedemptionScalarFieldEnum = {
 } as const
 
 export type PromoCodeRedemptionScalarFieldEnum = (typeof PromoCodeRedemptionScalarFieldEnum)[keyof typeof PromoCodeRedemptionScalarFieldEnum]
+
+
+export const StoreSettingScalarFieldEnum = {
+  id: 'id',
+  storeName: 'storeName',
+  tagline: 'tagline',
+  supportEmail: 'supportEmail',
+  bannerText: 'bannerText',
+  bannerActive: 'bannerActive',
+  freeShippingEnabled: 'freeShippingEnabled',
+  freeShippingThreshold: 'freeShippingThreshold',
+  standardShippingRate: 'standardShippingRate',
+  expressShippingRate: 'expressShippingRate',
+  handlingDays: 'handlingDays',
+  currency: 'currency',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StoreSettingScalarFieldEnum = (typeof StoreSettingScalarFieldEnum)[keyof typeof StoreSettingScalarFieldEnum]
 
 
 export const SortOrder = {

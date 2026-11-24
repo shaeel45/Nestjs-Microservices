@@ -398,7 +398,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   PromoCode: 'PromoCode',
-  PromoCodeRedemption: 'PromoCodeRedemption'
+  PromoCodeRedemption: 'PromoCodeRedemption',
+  StoreSetting: 'StoreSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "promoCode" | "promoCodeRedemption"
+    modelProps: "promoCode" | "promoCodeRedemption" | "storeSetting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StoreSetting: {
+      payload: Prisma.$StoreSettingPayload<ExtArgs>
+      fields: Prisma.StoreSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StoreSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StoreSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.StoreSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StoreSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>
+        }
+        findMany: {
+          args: Prisma.StoreSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>[]
+        }
+        create: {
+          args: Prisma.StoreSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>
+        }
+        createMany: {
+          args: Prisma.StoreSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StoreSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.StoreSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>
+        }
+        update: {
+          args: Prisma.StoreSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.StoreSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StoreSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StoreSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.StoreSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StoreSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.StoreSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStoreSetting>
+        }
+        groupBy: {
+          args: Prisma.StoreSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StoreSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StoreSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StoreSettingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -634,6 +709,25 @@ export const PromoCodeRedemptionScalarFieldEnum = {
 } as const
 
 export type PromoCodeRedemptionScalarFieldEnum = (typeof PromoCodeRedemptionScalarFieldEnum)[keyof typeof PromoCodeRedemptionScalarFieldEnum]
+
+
+export const StoreSettingScalarFieldEnum = {
+  id: 'id',
+  storeName: 'storeName',
+  tagline: 'tagline',
+  supportEmail: 'supportEmail',
+  bannerText: 'bannerText',
+  bannerActive: 'bannerActive',
+  freeShippingEnabled: 'freeShippingEnabled',
+  freeShippingThreshold: 'freeShippingThreshold',
+  standardShippingRate: 'standardShippingRate',
+  expressShippingRate: 'expressShippingRate',
+  handlingDays: 'handlingDays',
+  currency: 'currency',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StoreSettingScalarFieldEnum = (typeof StoreSettingScalarFieldEnum)[keyof typeof StoreSettingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -881,6 +975,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   promoCode?: Prisma.PromoCodeOmit
   promoCodeRedemption?: Prisma.PromoCodeRedemptionOmit
+  storeSetting?: Prisma.StoreSettingOmit
 }
 
 /* Types for Logging */

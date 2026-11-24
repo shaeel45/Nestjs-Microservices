@@ -19,6 +19,14 @@ model User {
   lastname   String   @default("")
   email     String   @unique
   role      Role   @default(CUSTOMER)
+
+  // Default shipping address (edited from the storefront profile page).
+  addressStreet     String @default("")
+  addressCity       String @default("")
+  addressState      String @default("")
+  addressPostalCode String @default("")
+  addressCountry    String @default("United States")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

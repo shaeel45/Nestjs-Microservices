@@ -44,3 +44,24 @@ model PromoCodeRedemption {
   @@index([orderReference])
   @@map("ecommerce_promo_code_redemptions")
 }
+
+/// Single-row store configuration: promotions banner, shipping rules and
+/// branding. The `id` is pinned to 1 so reads and writes always target the
+/// same record.
+model StoreSetting {
+  id                    Int      @id @default(1)
+  storeName             String   @default("ShopForge")
+  tagline               String   @default("Modern Wardrobe Essentials")
+  supportEmail          String   @default("support@shopforge.com")
+  bannerText            String   @default("")
+  bannerActive          Boolean  @default(true)
+  freeShippingEnabled   Boolean  @default(true)
+  freeShippingThreshold Float    @default(75)
+  standardShippingRate  Float    @default(9.99)
+  expressShippingRate   Float    @default(14.99)
+  handlingDays          Int      @default(1)
+  currency              String   @default("USD")
+  updatedAt             DateTime @updatedAt
+
+  @@map("ecommerce_store_settings")
+}

@@ -40,6 +40,11 @@ export type UserMinAggregateOutputType = {
   lastname: string | null
   email: string | null
   role: $Enums.Role | null
+  addressStreet: string | null
+  addressCity: string | null
+  addressState: string | null
+  addressPostalCode: string | null
+  addressCountry: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +55,11 @@ export type UserMaxAggregateOutputType = {
   lastname: string | null
   email: string | null
   role: $Enums.Role | null
+  addressStreet: string | null
+  addressCity: string | null
+  addressState: string | null
+  addressPostalCode: string | null
+  addressCountry: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +70,11 @@ export type UserCountAggregateOutputType = {
   lastname: number
   email: number
   role: number
+  addressStreet: number
+  addressCity: number
+  addressState: number
+  addressPostalCode: number
+  addressCountry: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,6 +95,11 @@ export type UserMinAggregateInputType = {
   lastname?: true
   email?: true
   role?: true
+  addressStreet?: true
+  addressCity?: true
+  addressState?: true
+  addressPostalCode?: true
+  addressCountry?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -90,6 +110,11 @@ export type UserMaxAggregateInputType = {
   lastname?: true
   email?: true
   role?: true
+  addressStreet?: true
+  addressCity?: true
+  addressState?: true
+  addressPostalCode?: true
+  addressCountry?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +125,11 @@ export type UserCountAggregateInputType = {
   lastname?: true
   email?: true
   role?: true
+  addressStreet?: true
+  addressCity?: true
+  addressState?: true
+  addressPostalCode?: true
+  addressCountry?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -197,6 +227,11 @@ export type UserGroupByOutputType = {
   lastname: string
   email: string
   role: $Enums.Role
+  addressStreet: string
+  addressCity: string
+  addressState: string
+  addressPostalCode: string
+  addressCountry: string
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -230,6 +265,11 @@ export type UserWhereInput = {
   lastname?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
+  addressStreet?: Prisma.StringFilter<"User"> | string
+  addressCity?: Prisma.StringFilter<"User"> | string
+  addressState?: Prisma.StringFilter<"User"> | string
+  addressPostalCode?: Prisma.StringFilter<"User"> | string
+  addressCountry?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
@@ -240,6 +280,11 @@ export type UserOrderByWithRelationInput = {
   lastname?: Prisma.SortOrder
   email?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  addressStreet?: Prisma.SortOrder
+  addressCity?: Prisma.SortOrder
+  addressState?: Prisma.SortOrder
+  addressPostalCode?: Prisma.SortOrder
+  addressCountry?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -253,6 +298,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   fullname?: Prisma.StringFilter<"User"> | string
   lastname?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
+  addressStreet?: Prisma.StringFilter<"User"> | string
+  addressCity?: Prisma.StringFilter<"User"> | string
+  addressState?: Prisma.StringFilter<"User"> | string
+  addressPostalCode?: Prisma.StringFilter<"User"> | string
+  addressCountry?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }, "id" | "email">
@@ -263,6 +313,11 @@ export type UserOrderByWithAggregationInput = {
   lastname?: Prisma.SortOrder
   email?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  addressStreet?: Prisma.SortOrder
+  addressCity?: Prisma.SortOrder
+  addressState?: Prisma.SortOrder
+  addressPostalCode?: Prisma.SortOrder
+  addressCountry?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -281,6 +336,11 @@ export type UserScalarWhereWithAggregatesInput = {
   lastname?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
+  addressStreet?: Prisma.StringWithAggregatesFilter<"User"> | string
+  addressCity?: Prisma.StringWithAggregatesFilter<"User"> | string
+  addressState?: Prisma.StringWithAggregatesFilter<"User"> | string
+  addressPostalCode?: Prisma.StringWithAggregatesFilter<"User"> | string
+  addressCountry?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -290,6 +350,11 @@ export type UserCreateInput = {
   lastname?: string
   email: string
   role?: $Enums.Role
+  addressStreet?: string
+  addressCity?: string
+  addressState?: string
+  addressPostalCode?: string
+  addressCountry?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -300,6 +365,11 @@ export type UserUncheckedCreateInput = {
   lastname?: string
   email: string
   role?: $Enums.Role
+  addressStreet?: string
+  addressCity?: string
+  addressState?: string
+  addressPostalCode?: string
+  addressCountry?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -309,6 +379,11 @@ export type UserUpdateInput = {
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  addressStreet?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCity?: Prisma.StringFieldUpdateOperationsInput | string
+  addressState?: Prisma.StringFieldUpdateOperationsInput | string
+  addressPostalCode?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCountry?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -319,6 +394,11 @@ export type UserUncheckedUpdateInput = {
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  addressStreet?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCity?: Prisma.StringFieldUpdateOperationsInput | string
+  addressState?: Prisma.StringFieldUpdateOperationsInput | string
+  addressPostalCode?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCountry?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -329,6 +409,11 @@ export type UserCreateManyInput = {
   lastname?: string
   email: string
   role?: $Enums.Role
+  addressStreet?: string
+  addressCity?: string
+  addressState?: string
+  addressPostalCode?: string
+  addressCountry?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -338,6 +423,11 @@ export type UserUpdateManyMutationInput = {
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  addressStreet?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCity?: Prisma.StringFieldUpdateOperationsInput | string
+  addressState?: Prisma.StringFieldUpdateOperationsInput | string
+  addressPostalCode?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCountry?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -348,6 +438,11 @@ export type UserUncheckedUpdateManyInput = {
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  addressStreet?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCity?: Prisma.StringFieldUpdateOperationsInput | string
+  addressState?: Prisma.StringFieldUpdateOperationsInput | string
+  addressPostalCode?: Prisma.StringFieldUpdateOperationsInput | string
+  addressCountry?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -358,6 +453,11 @@ export type UserCountOrderByAggregateInput = {
   lastname?: Prisma.SortOrder
   email?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  addressStreet?: Prisma.SortOrder
+  addressCity?: Prisma.SortOrder
+  addressState?: Prisma.SortOrder
+  addressPostalCode?: Prisma.SortOrder
+  addressCountry?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -372,6 +472,11 @@ export type UserMaxOrderByAggregateInput = {
   lastname?: Prisma.SortOrder
   email?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  addressStreet?: Prisma.SortOrder
+  addressCity?: Prisma.SortOrder
+  addressState?: Prisma.SortOrder
+  addressPostalCode?: Prisma.SortOrder
+  addressCountry?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -382,6 +487,11 @@ export type UserMinOrderByAggregateInput = {
   lastname?: Prisma.SortOrder
   email?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  addressStreet?: Prisma.SortOrder
+  addressCity?: Prisma.SortOrder
+  addressState?: Prisma.SortOrder
+  addressPostalCode?: Prisma.SortOrder
+  addressCountry?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -418,6 +528,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   lastname?: boolean
   email?: boolean
   role?: boolean
+  addressStreet?: boolean
+  addressCity?: boolean
+  addressState?: boolean
+  addressPostalCode?: boolean
+  addressCountry?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -428,6 +543,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastname?: boolean
   email?: boolean
   role?: boolean
+  addressStreet?: boolean
+  addressCity?: boolean
+  addressState?: boolean
+  addressPostalCode?: boolean
+  addressCountry?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -438,6 +558,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   lastname?: boolean
   email?: boolean
   role?: boolean
+  addressStreet?: boolean
+  addressCity?: boolean
+  addressState?: boolean
+  addressPostalCode?: boolean
+  addressCountry?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -448,11 +573,16 @@ export type UserSelectScalar = {
   lastname?: boolean
   email?: boolean
   role?: boolean
+  addressStreet?: boolean
+  addressCity?: boolean
+  addressState?: boolean
+  addressPostalCode?: boolean
+  addressCountry?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullname" | "lastname" | "email" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullname" | "lastname" | "email" | "role" | "addressStreet" | "addressCity" | "addressState" | "addressPostalCode" | "addressCountry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
@@ -463,6 +593,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     lastname: string
     email: string
     role: $Enums.Role
+    addressStreet: string
+    addressCity: string
+    addressState: string
+    addressPostalCode: string
+    addressCountry: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -893,6 +1028,11 @@ export interface UserFieldRefs {
   readonly lastname: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'Role'>
+  readonly addressStreet: Prisma.FieldRef<"User", 'String'>
+  readonly addressCity: Prisma.FieldRef<"User", 'String'>
+  readonly addressState: Prisma.FieldRef<"User", 'String'>
+  readonly addressPostalCode: Prisma.FieldRef<"User", 'String'>
+  readonly addressCountry: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
