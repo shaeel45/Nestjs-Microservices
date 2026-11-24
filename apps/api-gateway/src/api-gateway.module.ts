@@ -11,6 +11,7 @@ import { PromoCodesController } from './promocodes/promocodes.controller.js';
 import { OrdersController } from './orders/orders.controller.js';
 import { CartController } from './cart/cart.controller.js';
 import { CheckoutController } from './checkout/checkout.controller.js';
+import { WishlistController } from './wishlist/wishlist.controller.js';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { CheckoutController } from './checkout/checkout.controller.js';
     PromoCodesController,
     OrdersController,
     CartController,
+    WishlistController,
     CheckoutController,
   ],
   providers: [JwtAuthGuard, RolesGuard],

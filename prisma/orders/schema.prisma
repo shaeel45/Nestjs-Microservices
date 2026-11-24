@@ -144,3 +144,47 @@ model CartItem {
   @@index([productId])
   @@map("ecommerce_cart_items")
 }
+
+/**
+ * Server-side wishlist. Identified by a client-generated token so a guest
+ * wishlist survives reloads, and linked to the storefront customer once they
+ * sign in — the same identity model as the cart.
+ */
+model Wishlist {
+  id            Int      @id @default(autoincrement())
+  wishlistToken String   @unique
+  customerId    String?
+  customerEmail String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items WishlistItem[]
+
+  @@index([customerId])
+  @@index([updatedAt])
+  @@map("ecommerce_wishlists")
+}
+
+model WishlistItem {
+  id         Int     @id @default(autoincrement())
+  wishlistId Int
+  productId  String?
+  name       String
+  price      Float   @default(0)
+  image      String?
+  category   String?
+
+  /// Product-or-name based key so one product only appears once per wishlist.
+  itemKey String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wishlist Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+
+  @@unique([wishlistId, itemKey])
+  @@index([wishlistId])
+  @@index([productId])
+  @@map("ecommerce_wishlist_items")
+}

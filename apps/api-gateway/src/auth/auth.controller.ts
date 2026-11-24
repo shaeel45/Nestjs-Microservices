@@ -5,11 +5,11 @@ import {
   Inject,
   Post,
 } from '@nestjs/common';
-import {RegisterDto} from '../../../libs/dto/auth/register.dto.js';
+import { RegisterDto } from '../../../libs/dto/auth/register.dto.js';
 import { ClientProxy } from '@nestjs/microservices';
 import { Public } from './decorators/public.decorators.js';
-import { CurrentUser } from './decorators/current-user.decorator.js';
-import {RefreshTokenDto} from '../../../libs/dto/auth/refreshToken.dto.js';
+import { RefreshTokenDto } from '../../../libs/dto/auth/refreshToken.dto.js';
+import { sendRpc } from '../../../libs/rpc/rpc-client.util.js';
 
 @Controller('auth')
 export class AuthController {
@@ -17,43 +17,37 @@ export class AuthController {
     @Inject('AUTH_SERVICE')
     private readonly authClient: ClientProxy,
   ) {}
- 
+
   //POST: auth/register
   @Public()
   @Post('register')
   register(@Body() dto: RegisterDto) {
-    return this.authClient.send(
-      { cmd: 'auth.register' },
-      dto,
-    );
+    return sendRpc(this.authClient, 'auth.register', dto);
   }
 
   //POST: auth/login
   @Public()
   @Post('login')
-  login(@Body() data: { email: string; password: string, role: string }) {
-    return this.authClient.send(
-      { cmd: 'auth.login' },
-      data,
-    );
+  login(@Body() data: { email: string; password: string; role?: string }) {
+    return sendRpc(this.authClient, 'auth.login', {
+      ...data,
+      role: data.role || 'CUSTOMER',
+    });
   }
 
   //POST: auth/refresh
   @Public()
   @Post('refresh')
-  refresh(@Body() dto: RefreshTokenDto){
-    return this.authClient.send({
-      cmd: 'auth.RefreshToken'
-    }, { refreshToken: dto.refreshToken })
+  refresh(@Body() dto: RefreshTokenDto) {
+    return sendRpc(this.authClient, 'auth.RefreshToken', {
+      refreshToken: dto.refreshToken,
+    });
   }
 
   //GET: auth/register
   @Public()
   @Get('register')
   getRegisterData() {
-    return this.authClient.send(
-      { cmd: 'auth.getRegisterData' },
-      {},
-    );
+    return sendRpc(this.authClient, 'auth.getRegisterData', {});
   }
 }

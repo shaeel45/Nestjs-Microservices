@@ -44,3 +44,16 @@ export type Cart = Prisma.CartModel
  * 
  */
 export type CartItem = Prisma.CartItemModel
+/**
+ * Model Wishlist
+ * *
+ *  * Server-side wishlist. Identified by a client-generated token so a guest
+ *  * wishlist survives reloads, and linked to the storefront customer once they
+ *  * sign in — the same identity model as the cart.
+ */
+export type Wishlist = Prisma.WishlistModel
+/**
+ * Model WishlistItem
+ * 
+ */
+export type WishlistItem = Prisma.WishlistItemModel
