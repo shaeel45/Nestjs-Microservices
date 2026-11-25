@@ -13,6 +13,7 @@ import { CartController } from './cart/cart.controller.js';
 import { CheckoutController } from './checkout/checkout.controller.js';
 import { WishlistController } from './wishlist/wishlist.controller.js';
 import { SettingsController } from './settings/settings.controller.js';
+import { AnalyticsController } from './analytics/analytics.controller.js';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { SettingsController } from './settings/settings.controller.js';
     WishlistController,
     CheckoutController,
     SettingsController,
+    AnalyticsController,
   ],
   providers: [JwtAuthGuard, RolesGuard],
 })

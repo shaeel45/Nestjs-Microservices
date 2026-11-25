@@ -124,6 +124,152 @@ export class OrdersService {
     };
   }
 
+  /**
+   * Dashboard analytics derived from the order table: revenue totals,
+   * month-over-month growth, a six-month revenue series, the latest orders and
+   * per-product revenue (the gateway maps product ids to categories).
+   */
+  async getAnalytics() {
+    const orders = await this.prisma.order.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        orderNumber: true,
+        customerName: true,
+        customerEmail: true,
+        status: true,
+        total: true,
+        createdAt: true,
+        items: {
+          select: {
+            productId: true,
+            productName: true,
+            quantity: true,
+            lineTotal: true,
+          },
+        },
+      },
+    });
+
+    // Cancelled orders never count towards revenue or the sales series.
+    const paid = orders.filter((order) => order.status !== 'CANCELLED');
+    const totalRevenue = roundMoney(
+      paid.reduce((sum, order) => sum + order.total, 0),
+    );
+    const totalOrders = orders.length;
+    const avgOrderValue = paid.length
+      ? roundMoney(totalRevenue / paid.length)
+      : 0;
+
+    const statusCounts = {
+      pending: 0,
+      processing: 0,
+      shipped: 0,
+      delivered: 0,
+      cancelled: 0,
+    };
+    for (const order of orders) {
+      const key = order.status.toLowerCase() as keyof typeof statusCounts;
+      if (key in statusCounts) statusCounts[key] += 1;
+    }
+
+    // Six rolling months, oldest first, always including the current month.
+    const now = new Date();
+    const buckets = new Map<
+      string,
+      { month: string; revenue: number; orders: number }
+    >();
+    const monthlySales: Array<{
+      month: string;
+      revenue: number;
+      orders: number;
+    }> = [];
+
+    for (let offset = 5; offset >= 0; offset -= 1) {
+      const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+      const bucket = {
+        month: date.toLocaleDateString('en-US', { month: 'short' }),
+        revenue: 0,
+        orders: 0,
+      };
+      buckets.set(`${date.getFullYear()}-${date.getMonth()}`, bucket);
+      monthlySales.push(bucket);
+    }
+
+    for (const order of paid) {
+      const created = new Date(order.createdAt);
+      const bucket = buckets.get(
+        `${created.getFullYear()}-${created.getMonth()}`,
+      );
+      if (!bucket) continue;
+      bucket.revenue = roundMoney(bucket.revenue + order.total);
+      bucket.orders += 1;
+    }
+
+    const growth = (current: number, previous: number) => {
+      if (previous > 0) {
+        return roundMoney(((current - previous) / previous) * 100);
+      }
+      return current > 0 ? 100 : 0;
+    };
+
+    const currentMonth = monthlySales[monthlySales.length - 1];
+    const previousMonth = monthlySales[monthlySales.length - 2] ?? {
+      revenue: 0,
+      orders: 0,
+    };
+
+    const productTotals = new Map<
+      string,
+      {
+        productId: string | null;
+        productName: string;
+        quantity: number;
+        revenue: number;
+      }
+    >();
+
+    for (const order of paid) {
+      for (const item of order.items) {
+        const key = item.productId ?? `name:${item.productName}`;
+        const entry = productTotals.get(key) ?? {
+          productId: item.productId,
+          productName: item.productName,
+          quantity: 0,
+          revenue: 0,
+        };
+        entry.quantity += item.quantity;
+        entry.revenue = roundMoney(entry.revenue + item.lineTotal);
+        productTotals.set(key, entry);
+      }
+    }
+
+    const productRevenue = [...productTotals.values()].sort(
+      (a, b) => b.revenue - a.revenue,
+    );
+
+    return {
+      totalRevenue,
+      totalOrders,
+      avgOrderValue,
+      revenueGrowth: growth(currentMonth.revenue, previousMonth.revenue),
+      ordersGrowth: growth(currentMonth.orders, previousMonth.orders),
+      statusCounts,
+      monthlySales,
+      recentOrders: orders.slice(0, 8).map((order) => ({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        total: order.total,
+        status: order.status,
+        createdAt: order.createdAt,
+      })),
+      productRevenue,
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
   async findById(id: number) {
     const order = await this.prisma.order.findUnique({
       where: { id },

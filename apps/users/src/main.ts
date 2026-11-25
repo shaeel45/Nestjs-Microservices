@@ -4,6 +4,7 @@ import {
   MicroserviceOptions,
   Transport,
 } from '@nestjs/microservices';
+import { RpcHttpExceptionFilter } from '../../libs/filters/rpc-http-exception.filter.js';
 import { AppModule } from './users.module.js';
 
 
@@ -18,6 +19,8 @@ async function bootstrap() {
       },
     },
   );
+
+  app.useGlobalFilters(new RpcHttpExceptionFilter());
 
   await app.listen();
   console.log(`Users microservice is running on tcp://127.0.0.1:3002`);

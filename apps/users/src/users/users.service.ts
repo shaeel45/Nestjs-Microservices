@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,6 +12,7 @@ import {
 } from '../../../libs/dto/users/create-user.dto.js';
 import { Prisma } from '@prisma/client/extension';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/wasm-compiler-edge';
+import { Role } from '../generated/prisma/enums.js';
 
 /** Address shape returned by the users API (matches the storefront model). */
 export type ShippingAddress = {
@@ -148,7 +150,13 @@ export class UsersService {
   }
 
   async deleteUser(id: number) {
-    await this.getUserById(id);
+    const user = await this.getUserById(id);
+
+    // Admin accounts are managed separately — never deletable from the
+    // customer list in the admin portal.
+    if (user.role === Role.ADMIN) {
+      throw new BadRequestException('Admin accounts cannot be deleted');
+    }
 
     await this.usersRepository.delete(id);
 

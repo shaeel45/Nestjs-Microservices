@@ -17,6 +17,12 @@ export class OrdersController {
     return this.ordersService.findAll(query);
   }
 
+  /** Admin dashboard: revenue totals, monthly series and product revenue. */
+  @MessagePattern({ cmd: 'orders.analytics' })
+  analytics() {
+    return this.ordersService.getAnalytics();
+  }
+
   /** Storefront: orders belonging to one customer. */
   @MessagePattern({ cmd: 'orders.mine' })
   findMine(@Payload() query?: MyOrdersQueryDto) {
