@@ -77,13 +77,13 @@ export class InventoryService {
         this.prisma.$queryRaw<InventoryItemRow[]>(Prisma.sql`
           SELECT "id", "productId", "quantity", "reservedQuantity", "warehouse",
                  "lowStockThreshold", "createdAt", "updatedAt"
-          FROM "ecommerce_inventory"
+          FROM "inventory_service"."ecommerce_inventory"
           ${where}
           ORDER BY "updatedAt" DESC
           ${all ? Prisma.empty : Prisma.sql`LIMIT ${limit} OFFSET ${skip}`}
         `),
         this.prisma.$queryRaw<{ count: bigint }[]>(Prisma.sql`
-          SELECT COUNT(*)::bigint AS count FROM "ecommerce_inventory" ${where}
+          SELECT COUNT(*)::bigint AS count FROM "inventory_service"."ecommerce_inventory" ${where}
         `),
       ]);
 
@@ -506,7 +506,7 @@ export class InventoryService {
       rows = await tx.$queryRaw<InventoryItemRow[]>(Prisma.sql`
         SELECT "id", "productId", "quantity", "reservedQuantity", "warehouse",
                "lowStockThreshold", "createdAt", "updatedAt"
-        FROM "ecommerce_inventory"
+        FROM "inventory_service"."ecommerce_inventory"
         WHERE "id" = ${key.inventoryItemId}
         FOR UPDATE
       `);
@@ -514,7 +514,7 @@ export class InventoryService {
       rows = await tx.$queryRaw<InventoryItemRow[]>(Prisma.sql`
         SELECT "id", "productId", "quantity", "reservedQuantity", "warehouse",
                "lowStockThreshold", "createdAt", "updatedAt"
-        FROM "ecommerce_inventory"
+        FROM "inventory_service"."ecommerce_inventory"
         WHERE "productId" = ${key.productId}
         FOR UPDATE
       `);

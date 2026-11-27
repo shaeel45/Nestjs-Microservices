@@ -66,7 +66,7 @@ export class CartService {
     const line = this.normalizeLine(data.item);
 
     await this.prisma.$executeRaw(Prisma.sql`
-      INSERT INTO "ecommerce_cart_items"
+      INSERT INTO "orders_service"."ecommerce_cart_items"
         ("cartId", "productId", "name", "price", "quantity", "size", "color",
          "image", "lineTotal", "variantKey", "createdAt", "updatedAt")
       VALUES (
@@ -215,7 +215,7 @@ export class CartService {
   async claimForCheckout(cartToken: string) {
     return this.prisma.$transaction(async (tx) => {
       const rows = await tx.$queryRaw<Array<{ id: number }>>(Prisma.sql`
-        SELECT "id" FROM "ecommerce_carts" WHERE "cartToken" = ${cartToken} FOR UPDATE
+        SELECT "id" FROM "orders_service"."ecommerce_carts" WHERE "cartToken" = ${cartToken} FOR UPDATE
       `);
       const cartId = rows[0]?.id;
       if (!cartId) return null;
