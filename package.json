@@ -6,11 +6,14 @@
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "build": "nest build",
+    "build": "npm run build:monolith",
     "deploy": "nest deploy",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-    "start": "nest start",
+    "start": "node dist/apps/monolith/apps/monolith/src/main.js",
     "start:dev": "nest start --watch",
     "start:users": "nest start --watch --config nest-cli.users.json",
     "start:gateway": "nest start --watch --config nest-cli.api-gateway.json",

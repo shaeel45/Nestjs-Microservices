@@ -54,6 +54,22 @@ start: npm run start:prod:monolith
 health: GET /settings/store   (200 + real Postgres query)
 ```
 
+**If you created the service manually instead of from the blueprint**, Render
+uses the plain `build` and `start` scripts. Both already point at the monolith,
+so the defaults work:
+
+```text
+build: npm run build   →  nest build --config nest-cli.monolith.json
+start: npm start       →  node dist/apps/monolith/apps/monolith/src/main.js
+```
+
+The only thing you lose is the automatic `prisma migrate deploy` — run
+`npm run prisma:migrate:all` locally when you add a migration, or switch the
+service to the blueprint build command.
+
+Node is pinned to 22 via `engines` in `package.json`; Render honours that, or
+`NODE_VERSION` if you set it.
+
 ### Verify
 
 ```powershell
@@ -175,6 +191,7 @@ builder, not to the deploy setup.
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| `Cannot find module '/opt/render/project/src/dist/main'` | Service is running the old `nest start`, which expects `dist/main` | Pull the latest `monoliths` branch — `build`/`start` now target the monolith |
 | Build fails on `prisma migrate deploy` | A URL is missing its `?schema=` param, or uses port 6543 | Paste the full URL from `.env`, port `5432` |
 | Deploy succeeds, all requests 500 | Env vars not set before first boot | Add them, then **Manual Deploy → Clear build cache & deploy** |
 | Frontend calls `localhost:3000` | `VITE_API_URL` missing at build time | Add the env var, redeploy (it is inlined) |
