@@ -12,6 +12,12 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    // Roles are an HTTP concern; TCP message handlers run after the gateway
+    // has already enforced auth and roles.
+    if (context.getType() !== 'http') {
+      return true;
+    }
+
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),

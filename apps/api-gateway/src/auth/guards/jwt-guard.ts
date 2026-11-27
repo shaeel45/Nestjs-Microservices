@@ -19,6 +19,13 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // In the single-process build this guard is global for both the HTTP
+    // adapter and the TCP listeners. Auth only applies to HTTP requests;
+    // internal RPC calls are already authenticated at the gateway boundary.
+    if (context.getType() !== 'http') {
+      return true;
+    }
+
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
