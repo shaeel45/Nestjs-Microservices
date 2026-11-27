@@ -13,7 +13,7 @@ services:
     plan: free
     region: singapore # closest free region to the Supabase ap-northeast-1 DB
     branch: monoliths
-    autoDeploy: true
+    autoDeployTrigger: commit
     # `npm ci` triggers postinstall, which runs the six `prisma generate`
     # steps. build:deploy then applies pending migrations and compiles the
     # monolith into dist/apps/monolith.
@@ -42,7 +42,7 @@ services:
         sync: false
 
       # Six schemas inside one Supabase Postgres. Keep the `?schema=...`
-      # query parameter on every URL — the services depend on it.
+      # query parameter on every URL; the services depend on it.
       - key: USERS_DATABASE_URL
         sync: false
       - key: AUTH_DATABASE_URL
