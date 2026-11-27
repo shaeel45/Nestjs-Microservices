@@ -6,6 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["orders_service"]
 }
 
 enum OrderStatus {
@@ -14,6 +15,8 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+
+  @@schema("orders_service")
 }
 
 model Order {
@@ -58,6 +61,7 @@ model Order {
   @@index([customerEmail])
   @@index([createdAt])
   @@map("ecommerce_orders")
+  @@schema("orders_service")
 }
 
 model OrderItem {
@@ -77,6 +81,7 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
   @@map("ecommerce_order_items")
+  @@schema("orders_service")
 }
 
 model OrderStatusEvent {
@@ -92,6 +97,7 @@ model OrderStatusEvent {
 
   @@index([orderId, createdAt])
   @@map("ecommerce_order_status_events")
+  @@schema("orders_service")
 }
 
 /**
@@ -117,6 +123,7 @@ model Cart {
   @@index([customerId])
   @@index([updatedAt])
   @@map("ecommerce_carts")
+  @@schema("orders_service")
 }
 
 model CartItem {
@@ -143,6 +150,7 @@ model CartItem {
   @@index([cartId])
   @@index([productId])
   @@map("ecommerce_cart_items")
+  @@schema("orders_service")
 }
 
 /**
@@ -164,6 +172,7 @@ model Wishlist {
   @@index([customerId])
   @@index([updatedAt])
   @@map("ecommerce_wishlists")
+  @@schema("orders_service")
 }
 
 model WishlistItem {
@@ -187,4 +196,5 @@ model WishlistItem {
   @@index([wishlistId])
   @@index([productId])
   @@map("ecommerce_wishlist_items")
+  @@schema("orders_service")
 }

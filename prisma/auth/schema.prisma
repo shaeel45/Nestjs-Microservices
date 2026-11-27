@@ -6,6 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["auth_service"]
 }
 
 model Credential {
@@ -15,6 +16,8 @@ model Credential {
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@schema("auth_service")
 }
 
 model RefreshToken {
@@ -29,4 +32,5 @@ model RefreshToken {
 
   @@index([userId])
   @@index([familyId])
+  @@schema("auth_service")
 }

@@ -6,6 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["inventory_service"]
 }
 
 enum InventoryTransactionType {
@@ -14,6 +15,8 @@ enum InventoryTransactionType {
   RETURN
   DAMAGE
   ADJUSTMENT
+
+  @@schema("inventory_service")
 }
 
 model InventoryItem {
@@ -33,6 +36,7 @@ model InventoryItem {
   @@index([warehouse])
   @@index([quantity])
   @@map("ecommerce_inventory")
+  @@schema("inventory_service")
 }
 
 model InventoryTransaction {
@@ -56,4 +60,5 @@ model InventoryTransaction {
   @@index([type, createdAt])
   @@index([referenceId])
   @@map("ecommerce_inventory_transactions")
+  @@schema("inventory_service")
 }

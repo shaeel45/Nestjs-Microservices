@@ -10,7 +10,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       throw new Error('USERS_DATABASE_URL is not configured');
     }
 
-    const adapter = new PrismaPg({ connectionString });
+    const adapter = new PrismaPg({ connectionString ,
+      ssl: { rejectUnauthorized: false },
+      options: '-c search_path=users',
+    });
     super({ adapter });
   }
 

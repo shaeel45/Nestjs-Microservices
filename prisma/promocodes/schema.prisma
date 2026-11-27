@@ -6,6 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["promocodes_service"]
 }
 
 model PromoCode {
@@ -26,6 +27,7 @@ model PromoCode {
   @@index([active])
   @@index([expiresAt])
   @@map("ecommerce_promo_codes")
+  @@schema("promocodes_service")
 }
 
 model PromoCodeRedemption {
@@ -43,6 +45,7 @@ model PromoCodeRedemption {
   @@index([promoCodeId, createdAt])
   @@index([orderReference])
   @@map("ecommerce_promo_code_redemptions")
+  @@schema("promocodes_service")
 }
 
 /// Single-row store configuration: promotions banner, shipping rules and
@@ -64,4 +67,5 @@ model StoreSetting {
   updatedAt             DateTime @updatedAt
 
   @@map("ecommerce_store_settings")
+  @@schema("promocodes_service")
 }

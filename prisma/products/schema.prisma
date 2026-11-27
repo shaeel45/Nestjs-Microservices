@@ -6,6 +6,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["products_service"]
 }
 
 model Products {
@@ -30,4 +31,5 @@ model Products {
   updatedAt      DateTime @updatedAt
 
   @@map("ecommerce_products")
+  @@schema("products_service")
 }

@@ -6,19 +6,22 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["users_service"]
 }
 
 enum Role {
-    CUSTOMER
-    ADMIN
+  CUSTOMER
+  ADMIN
+
+  @@schema("users_service")
 }
 
 model User {
   id        Int      @id @default(autoincrement())
-  fullname      String  @default("")
-  lastname   String   @default("")
+  fullname  String   @default("")
+  lastname  String   @default("")
   email     String   @unique
-  role      Role   @default(CUSTOMER)
+  role      Role     @default(CUSTOMER)
 
   // Default shipping address (edited from the storefront profile page).
   addressStreet     String @default("")
@@ -31,4 +34,5 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@map("ecommerce_users")
+  @@schema("users_service")
 }
