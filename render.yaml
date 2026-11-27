@@ -1,0 +1,63 @@
+# Render blueprint for the ShopForge API (single-process monolith).
+#
+# Deploy: Render Dashboard -> New -> Blueprint -> pick this repo and the
+# `monoliths` branch. Render reads this file and creates the service.
+# Every env var marked `sync: false` must be pasted in the dashboard once.
+#
+# Free plan limits: 512 MB RAM, 0.1 CPU, sleeps after 15 min idle,
+# ~60 s cold start, ephemeral disk (uploads are lost on redeploy).
+services:
+  - type: web
+    name: shopforge-api
+    runtime: node
+    plan: free
+    region: singapore # closest free region to the Supabase ap-northeast-1 DB
+    branch: monoliths
+    autoDeploy: true
+    # `npm ci` triggers postinstall, which runs the six `prisma generate`
+    # steps. build:deploy then applies pending migrations and compiles the
+    # monolith into dist/apps/monolith.
+    #
+    # --include=dev is required: the build needs typescript, @nestjs/cli and
+    # the prisma CLI, and Render installs with NODE_ENV=production when that
+    # variable is set, which would otherwise skip devDependencies.
+    buildCommand: npm ci --include=dev && npm run build:deploy
+    startCommand: npm run start:prod:monolith
+    # Public route that touches Postgres, so it doubles as a DB health check.
+    healthCheckPath: /settings/store
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.1
+      # Peak RSS measured at ~206 MB; cap the heap so the 512 MB container
+      # never gets OOM-killed.
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=384
+
+      # --- secrets: paste these in the Render dashboard -------------------
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: JWT_REFRESH_EXPIRES_IN
+        sync: false
+
+      # Six schemas inside one Supabase Postgres. Keep the `?schema=...`
+      # query parameter on every URL — the services depend on it.
+      - key: USERS_DATABASE_URL
+        sync: false
+      - key: AUTH_DATABASE_URL
+        sync: false
+      - key: PRODUCTS_DATABASE_URL
+        sync: false
+      - key: INVENTORY_DATABASE_URL
+        sync: false
+      - key: PROMOCODES_DATABASE_URL
+        sync: false
+      - key: ORDERS_DATABASE_URL
+        sync: false
+
+      # --- CORS: fill in after the two frontends are deployed -------------
+      - key: STOREFRONT_ORIGIN
+        sync: false
+      - key: ADMIN_PORTAL_ORIGIN
+        sync: false

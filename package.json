@@ -42,7 +42,9 @@
     "prisma:migrate:auth": "prisma migrate deploy --config prisma/auth.config.ts",
     "prisma:migrate:products": "prisma migrate deploy --config prisma/products.config.ts",
     "prisma:migrate:promocodes": "prisma migrate deploy --config prisma/promocodes.config.ts",
-    "prisma:migrate:orders": "prisma migrate deploy --config prisma/orders.config.ts"
+    "prisma:migrate:orders": "prisma migrate deploy --config prisma/orders.config.ts",
+    "prisma:migrate:all": "npm run prisma:migrate:users && npm run prisma:migrate:auth && npm run prisma:migrate:products && npm run prisma:migrate:inventory && npm run prisma:migrate:promocodes && npm run prisma:migrate:orders",
+    "build:deploy": "npm run prisma:migrate:all && npm run build:monolith"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
